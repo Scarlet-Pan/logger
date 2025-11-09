@@ -29,7 +29,8 @@ internal actual object PlatformLogger : Logger {
         val fullMessage = buildString {
             append("[$level] $tag: $msg")
             if (tr != null) {
-                append(" Exception: ${tr.message}")
+                val type = tr::class.simpleName ?: tr::class.qualifiedName ?: "Exception"
+                append(" $type: ${tr.message}")
                 // 可选：打印堆栈跟踪（在 Kotlin/Native 中堆栈信息有限）
                 tr.getStackTrace().forEach { frame ->
                     append("\n  at $frame")
