@@ -19,7 +19,7 @@ kotlin {
         withJava() // enable java compilation support
         withHostTestBuilder {
 
-        }.configure {  }
+        }.configure { }
 
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
@@ -79,6 +79,7 @@ kotlin {
         commonTest {
             dependencies {
                 implementation(libs.kotlin.test)
+                implementation(libs.robolectric)
             }
         }
 
