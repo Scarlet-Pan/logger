@@ -40,6 +40,10 @@ class LoggerTest {
         Logger.i(TAG, "Test a info message.")
         Logger.w(TAG, "Test a warn message.")
         Logger.e(TAG, "Test a error message.")
+
+        val userId = 0
+        val deviceId = "test"
+        Logger.i(TAG, "Fetched userId=$userId, deviceId=$deviceId.")
     }
 
     @Test

@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "logger"
 include(":logger")
+include(":logger-slf4j")
