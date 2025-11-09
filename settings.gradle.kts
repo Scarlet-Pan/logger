@@ -22,4 +22,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "logger"
 include(":logger")
-include(":logger-android")
