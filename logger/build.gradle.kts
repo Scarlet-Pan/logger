@@ -4,7 +4,12 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.android.lint)
+    alias(libs.plugins.maven.publish)
+    `signing`
 }
+
+group = "io.github.scarlet-pan"
+version = "1.0.0-SNAPSHOT"
 
 kotlin {
 
@@ -22,7 +27,6 @@ kotlin {
         withHostTestBuilder {
 
         }.configure { }
-
         withDeviceTestBuilder {
             sourceSetTreeName = "test"
         }.configure {
@@ -126,4 +130,47 @@ kotlin {
         }
     }
 
+}
+
+mavenPublishing {
+    publishToMavenCentral()
+
+    signAllPublications()
+
+    coordinates(group.toString(), "logger", version.toString())
+
+    pom {
+        name = "Logger"
+        description = "A Kotlin Multiplatform logging library."
+        inceptionYear = "2025"
+        url = "https://github.com/scarlet-pan/logger"
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://opensource.org/licenses/MIT"
+            }
+        }
+        developers {
+            developer {
+                id = "Scarlet-Pan"
+                name = "Scarlet Pan"
+                email = "scarletpan@qq.com"
+            }
+        }
+        scm {
+            url = "https://github.com/scarlet-pan/logger"
+            connection = "scm:git:https://github.com/scarlet-pan/logger.git"
+            developerConnection = "scm:git:ssh://git@github.com/scarlet-pan/logger.git"
+        }
+    }
+}
+
+signing {
+    // 启用 in-memory signing
+    useInMemoryPgpKeys(
+        providers.gradleProperty("signing.keyId").orNull,
+        providers.gradleProperty("signing.secretKey").orNull,
+        providers.gradleProperty("signing.password").orNull
+    )
+    sign(publishing.publications)
 }
