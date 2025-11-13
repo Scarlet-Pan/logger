@@ -28,6 +28,14 @@ private var _default: Logger = PlatformLogger
  */
 interface Logger {
 
+    /**
+     * The default logger, equivalent to a delegate of [default], providing convenient direct calls:
+     *
+     * ```
+     * Logger.d("Network", "Request sent.")
+     * Logger.e("Database", "Failed to open it.", exception)
+     * ```
+     */
     companion object : Logger by _default {
 
         private const val TAG = "Logger"
