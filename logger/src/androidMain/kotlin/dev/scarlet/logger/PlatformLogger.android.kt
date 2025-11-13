@@ -5,7 +5,7 @@ import android.util.Log
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual object PlatformLogger : Logger {
 
-    actual override fun toString(): String = "AndroidLogger"
+    actual override fun toString(): String = "AndroidLog"
 
     actual override fun d(tag: String, msg: String, tr: Throwable?) {
         Log.d(tag, msg, tr)
