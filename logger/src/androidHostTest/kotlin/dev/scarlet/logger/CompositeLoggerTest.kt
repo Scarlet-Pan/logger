@@ -7,54 +7,46 @@ import org.robolectric.shadows.ShadowLog
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 /**
  * @author Scarlet Pan
  * @version 1.0.0
  */
 @RunWith(RobolectricTestRunner::class)
-class LoggerTest {
-
-    companion object {
-        private const val TAG = "LoggerTest"
-    }
+class CompositeLoggerTest {
 
     @Before
     fun setUp() {
         ShadowLog.stream = System.out
+        Logger.default = Logger.SYSTEM
     }
 
     @Test
-    fun systemLogger_isPlatformLogger() {
-        assertIs<PlatformLogger>(Logger.SYSTEM)
-    }
-
-    @Test
-    fun defaultLogger_isSystem() {
-        assertEquals(Logger.default, Logger.SYSTEM)
-    }
-
-    @Test
-    fun defaultLogger_isWorkable() {
-        Logger.d(TAG, "Test a debug message.")
-        Logger.i(TAG, "Test a info message.")
-        Logger.w(TAG, "Test a warn message.")
-        Logger.e(TAG, "Test a error message.")
-    }
-
-    @Test
-    fun defaultLoggerChanged_isCorrect() {
-        assertIs<PlatformLogger>(Logger.default)
-
+    fun composite_logger_to_string_returns_expected_format() {
         Logger.default += ALogger
-        assertIs<CompositeLogger>(Logger.default)
-        assertEquals("[AndroidLogger, ALogger]", Logger.default.toString())
 
-        Logger.default += BLogger
-        assertIs<CompositeLogger>(Logger.default)
-        assertEquals("[AndroidLogger, ALogger, BLogger]", Logger.default.toString())
+        assertEquals("[AndroidLog, ALogger]", Logger.default.toString())
     }
 
+    @Test
+    fun composite_2_loggers_to_string_returns_expected_format() {
+        Logger.default += ALogger
+        Logger.default += BLogger
+
+        assertEquals("[AndroidLog, ALogger, BLogger]", Logger.default.toString())
+    }
+
+    @Test
+    fun can_reset_default_logger_to_system() {
+        Logger.default += ALogger
+        assertTrue(Logger.default is CompositeLogger)
+
+        // Reset
+        Logger.default = Logger.SYSTEM
+        assertEquals(Logger.SYSTEM, Logger.default)
+        assertIs<PlatformLogger>(Logger.default)
+    }
 }
 
 private abstract class NameLogger(
@@ -82,5 +74,4 @@ private abstract class NameLogger(
 }
 
 private object ALogger : NameLogger("ALogger")
-
 private object BLogger : NameLogger("BLogger")
