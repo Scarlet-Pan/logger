@@ -171,7 +171,6 @@ mavenPublishing {
 }
 
 signing {
-    // 启用 in-memory signing
     useInMemoryPgpKeys(
         providers.gradleProperty("signing.keyId").orNull,
         providers.gradleProperty("signing.secretKey").orNull,

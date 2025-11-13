@@ -1,7 +1,7 @@
 package dev.scarlet.logger
 
 /**
- * 宿主平台的[Logger]实现。
+ * The host platform's implementation of [Logger].
  *
  * @author Scarlet Pan
  * @version 1.0.0
