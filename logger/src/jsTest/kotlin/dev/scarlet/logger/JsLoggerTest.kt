@@ -6,7 +6,7 @@ import kotlin.test.assertTrue
 class JsLoggerTest {
 
     @Test
-    fun `debug logs to console with correct format`() {
+    fun debug_logs_to_console_with_correct_format() {
         val captured = mutableListOf<String>()
         val consoleDynamic = console.asDynamic()
 
@@ -24,7 +24,7 @@ class JsLoggerTest {
     }
 
     @Test
-    fun `info logs to console with correct format`() {
+    fun info_logs_to_console_with_correct_format() {
         val captured = mutableListOf<String>()
         val consoleDynamic = console.asDynamic()
 
@@ -42,7 +42,7 @@ class JsLoggerTest {
     }
 
     @Test
-    fun `warn logs to console with correct format`() {
+    fun warn_logs_to_console_with_correct_format() {
         val captured = mutableListOf<String>()
         val consoleDynamic = console.asDynamic()
 
@@ -60,7 +60,7 @@ class JsLoggerTest {
     }
 
     @Test
-    fun `error logs to console with correct format`() {
+    fun error_logs_to_console_with_correct_format() {
         val captured = mutableListOf<String>()
         val consoleDynamic = console.asDynamic()
 
@@ -78,7 +78,7 @@ class JsLoggerTest {
     }
 
     @Test
-    fun `error with exception passes error object to console`() {
+    fun error_with_exception_passes_error_object_to_console() {
         val capturedErrors = mutableListOf<dynamic>()
         val consoleDynamic = console.asDynamic()
 
@@ -100,7 +100,7 @@ class JsLoggerTest {
     }
 
     @Test
-    fun `empty message logs tag only`() {
+    fun empty_message_logs_tag_only() {
         val captured = mutableListOf<String>()
         val consoleDynamic = console.asDynamic()
 
