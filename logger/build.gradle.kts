@@ -1,5 +1,4 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.plugin.KotlinTargetHierarchy
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -10,7 +9,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.0.0-SNAPSHOT"
+version = "1.0.0-rc01"
 
 kotlin {
 
