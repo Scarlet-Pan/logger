@@ -1,6 +1,6 @@
 package dev.scarlet.logger
 
-import platform.Foundation.NSLog
+import platform.darwin.NSLog
 import kotlin.experimental.ExperimentalNativeApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
