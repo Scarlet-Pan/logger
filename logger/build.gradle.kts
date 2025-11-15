@@ -155,9 +155,9 @@ mavenPublishing {
 
 signing {
     useInMemoryPgpKeys(
-        providers.gradleProperty("signing.keyId").orNull,
-        providers.gradleProperty("signing.secretKey").orNull,
-        providers.gradleProperty("signing.password").orNull
+        providers.gradleProperty("signingInMemoryKeyId").orNull,
+        providers.gradleProperty("signingInMemoryKey").orNull,
+        providers.gradleProperty("signingInMemoryKeyPassword").orNull
     )
     sign(publishing.publications)
 }
