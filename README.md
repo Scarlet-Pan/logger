@@ -1,8 +1,10 @@
-# Scarlet Logger
+# Logger
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
-[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
-[![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
+[[Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
+[[Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
+[[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
+[[License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -12,10 +14,10 @@
 - ✅ **Android Log Style**: Familiar `d()`, `i()`, `w()`, `e()` APIs, just like `android.util.Log`. Perfect for Android and Kotlin developers.
 - ✅ **Truly Cross-Platform**: Works out of the box in **KMP libraries**, **KMP apps**, and even **standalone projects** (Android, iOS, JVM, JS).
 - ✅ **Zero Platform Code**: Automatically uses native logging:
-    - Android → `Log.d`
-    - iOS → `NSLog`
-    - JVM → `System.out`
-    - JS → `console.log`
+    - **Android** → `android.util.Log`
+    - **iOS** → `NSLog`
+    - **JVM** → `System.out`
+    - **JS** → `console.log`
 
 > 🎯 **Log in shared code like you always did on Android — it just works everywhere.**
 
@@ -32,6 +34,11 @@ dependencies {
 ```
 
 No extra setup. No platform-specific configuration.
+
+> 🔧 **Minimum Requirements**  
+> - Kotlin **≥ 1.9.0**  
+> - Android minSdk **≥ 21**  
+> - iOS deployment target **≥ 12.0**
 
 ---
 
@@ -57,7 +64,8 @@ Logger.e("Crash", "Unexpected error", exception)
 Send logs to multiple destinations in one line:
 
 ```kotlin
-Logger.default = Logger.SYSTEM + MyCustomLogger()
+// Send logs to both system and your custom logger
+Logger.default = Logger.SYSTEM + CustomLogger()
 ```
 
 All subsequent logs will be dispatched to both loggers automatically.
@@ -76,8 +84,21 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 ```
 
 - Tag-first design
-- Optional `Throwable` support
+- Optional `Throwable` support (auto stack trace)
 - Fully thread-safe
+
+---
+
+## 🌍 Supported Platforms
+
+| Platform | Target | Output Target        |
+|----------|--------|----------------------|
+| Android  | Android| `android.util.Log`   |
+| iOS      | Native | `NSLog`              |
+| JVM      | JVM    | `System.out`         |
+| JS       | JS (IR)| `console.log`        |
+
+> ℹ️ Built with **Kotlin 1.9.23**, compatible with **Kotlin 1.9.0+**.
 
 ---
 
@@ -89,11 +110,8 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📄 License
 
-MIT — see [LICENSE](LICENSE).
+This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 
-> Made for Kotlin Multiplatform developers who miss `Log.d()` in common code.
-
----
 
 <br><br>
 <div align="center">
@@ -103,11 +121,13 @@ MIT — see [LICENSE](LICENSE).
 </div>
 <br><br>
 
-# Scarlet Logger
+# Logger
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
-[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
-[![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
+[[Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
+[[支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
+[[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
+[[许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -117,10 +137,10 @@ MIT — see [LICENSE](LICENSE).
 - ✅ **Android 日志风格**：提供与 `android.util.Log` 完全一致的 `d()`、`i()`、`w()`、`e()` 接口，Android/Kotlin 开发者秒上手。
 - ✅ **真正跨平台**：既适用于 **KMP 库** 和 **KMP 应用**，也适用于 **纯 Android、iOS、JVM 或 JS 项目**。
 - ✅ **零平台代码**：自动桥接各平台原生日志系统：
-    - Android → `Log.d`
-    - iOS → `NSLog`
-    - JVM → `System.out`
-    - JS → `console.log`
+    - **Android** → `android.util.Log`
+    - **iOS** → `NSLog`
+    - **JVM** → `System.out`
+    - **JS** → `console.log`
 
 > 🎯 **在共享代码中像写 Android 一样打日志 —— 一次编写，处处运行。**
 
@@ -138,6 +158,11 @@ dependencies {
 
 无需额外配置，开箱即用。
 
+> 🔧 **最低要求**  
+> - Kotlin **≥ 1.9.0**  
+> - Android minSdk **≥ 21**  
+> - iOS 部署目标 **≥ 12.0**
+
 ---
 
 ## 🚀 使用方法
@@ -147,10 +172,10 @@ dependencies {
 ```kotlin
 import dev.scarlet.logger.Logger
 
-Logger.d("Network", "请求已发送")
-Logger.i("Database", "查询成功")
-Logger.w("App", "使用了废弃 API")
-Logger.e("Crash", "发生未预期错误", exception)
+Logger.d("Network", "Request sent")
+Logger.i("Database", "Query succeeded")
+Logger.w("App", "Deprecated API used")
+Logger.e("Crash", "Unexpected error", exception)
 ```
 
 ✅ 在 **KMP 库或应用的 `commonMain`** 中直接调用；  
@@ -162,10 +187,11 @@ Logger.e("Crash", "发生未预期错误", exception)
 想同时输出到多个目标？一行代码即可：
 
 ```kotlin
-Logger.default = Logger.SYSTEM + MyCustomLogger()
+// 同时发送日志到系统日志器和你的自定义日志器
+Logger.default = Logger.SYSTEM + CustomLogger()
 ```
 
-此后所有日志将自动分发给系统日志器和你的自定义日志器。
+此后所有日志将自动分发给两个日志器。
 
 ---
 
@@ -186,6 +212,19 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ---
 
+## 🌍 支持的平台
+
+| 平台    | 目标平台 | 输出目标             |
+|---------|----------|----------------------|
+| Android | Android  | `android.util.Log`   |
+| iOS     | Native   | `NSLog`              |
+| JVM     | JVM      | `System.out`         |
+| JS      | JS (IR)  | `console.log`        |
+
+> ℹ️ 基于 **Kotlin 1.9.23** 构建，兼容 **Kotlin 1.9.0 及以上版本**。
+
+---
+
 ## 🤝 贡献
 
 欢迎贡献！详见 [CONTRIBUTING.md](CONTRIBUTING.md)。
@@ -194,6 +233,4 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ## 📄 许可证
 
-MIT 许可证 —— 详见 [LICENSE](LICENSE)。
-
-> 为那些在 `common` 代码中怀念 `Log.d()` 的 Kotlin 多平台开发者而生。
+本项目采用 **MIT 许可证** —— 详见 [LICENSE](LICENSE)。
