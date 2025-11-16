@@ -47,9 +47,9 @@ interface Logger {
          * This value is supplied per platform via Kotlin's `expect/actual` mechanism,
          * representing the most basic logging capability of that platform:
          * - **Android**: Uses `android.util.Log`.
-         * - **JVM**: Outputs to `System.out` / `System.err` by default; can be bridged to SLF4J, etc., by replacing [default].
-         * - **iOS/macOS**: Uses `NSLog`.
-         * - **JS**: Outputs to `console.debug` / `console.info` / `console.warn` / `console.error`.
+         * - **JVM**: Outputs to `System.out` / `System.err`; can be replaced to integrate with SLF4J, Logback, etc.
+         * - **iOS/macOS**: Prints formatted log messages to standard output (visible in Xcode console).
+         * - **JS**: Delegates to `console.debug`, `console.info`, `console.warn`, and `console.error`.
          *
          * @see default
          */
