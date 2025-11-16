@@ -2,6 +2,16 @@ name: Publish to Maven Central
 
 on:
   workflow_dispatch:
+    inputs:
+      module:
+        description: 'Module to publish (e.g., "logger", "logger-slf4j", or "all")'
+        required: true
+        default: 'logger-slf4j'
+        type: choice
+        options:
+          - logger
+          - logger-slf4j
+          - all
 
 jobs:
   publish:
@@ -18,11 +28,21 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
 
+      - name: Determine publish command
+        id: publish-config
+        run: |
+          MODULE="${{ github.event.inputs.module }}"
+          if [ "$MODULE" = "all" ]; then
+            echo "command=publishAllPublicationsToMavenCentralRepository" >> $GITHUB_OUTPUT
+          else
+            echo "command=:$MODULE:publishAllPublicationsToMavenCentralRepository" >> $GITHUB_OUTPUT
+          fi
+
       - name: Publish to Maven Central
-        run: ./gradlew publishAllPublicationsToMavenCentralRepository
+        run: ./gradlew ${{ steps.publish-config.outputs.command }}
         env:
-          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME  }}
-          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD  }}
+          ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+          ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyId: ${{ secrets.SIGNING_KEY_ID }}
           ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.SIGNING_SECRET_KEY }}
           ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.SIGNING_PASSWORD }}
