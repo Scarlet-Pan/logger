@@ -7,6 +7,7 @@ publish = "0.34.0"
 android-compileSdk = "36"
 android-targetSdk = "36"
 android-minSdk = "21"
+logger = "1.0.0-rc02"
 slf4j = "2.0.17"
 
 junit = "4.13.2"
@@ -18,6 +19,7 @@ androidEspresso = "3.6.1"
 
 [libraries]
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlin-runitme" }
+logger = { group = "io.github.scarlet-pan", name = "logger", version.ref = "logger" }
 slf4j-api = { group = "org.slf4j", name = "slf4j-api", version.ref = "slf4j" }
 slf4j-simple = { group = "org.slf4j", name = "slf4j-simple", version.ref = "slf4j" }
 
@@ -32,6 +34,7 @@ androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-co
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-multiplatform-android-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 android-lint = { id = "com.android.lint", version.ref = "agp" }
 maven-publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
 
