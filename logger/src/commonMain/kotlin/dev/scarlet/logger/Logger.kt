@@ -2,6 +2,7 @@ package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Companion.SYSTEM
 import dev.scarlet.logger.Logger.Companion.default
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 @Suppress("ObjectPropertyName")
@@ -46,14 +47,15 @@ interface Logger {
          * This value is supplied per platform via Kotlin's `expect/actual` mechanism,
          * representing the most basic logging capability of that platform:
          * - **Android**: Uses `android.util.Log`.
-         * - **JVM**: Outputs to `System.out` / `System.err` by default; can be bridged to SLF4J, etc., by replacing [default].
-         * - **iOS/macOS**: Uses `NSLog`.
-         * - **JS**: Outputs to `console.debug` / `console.info` / `console.warn` / `console.error`.
+         * - **JVM**: Outputs to `System.out` / `System.err`; can be replaced to integrate with SLF4J, Logback, etc.
+         * - **iOS/macOS**: Prints formatted log messages to standard output (visible in Xcode console).
+         * - **JS**: Delegates to `console.debug`, `console.info`, `console.warn`, and `console.error`.
          *
          * @see default
          */
         @JvmStatic
         val SYSTEM: Logger = PlatformLogger
+            @JvmName("getSystem") get
 
         /**
          * The global default logger instance.
@@ -72,6 +74,7 @@ interface Logger {
          *
          * @see SYSTEM
          */
+        @JvmStatic
         var default: Logger
             get() = _default
             set(value) {

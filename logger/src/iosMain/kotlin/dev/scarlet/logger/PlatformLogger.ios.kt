@@ -1,6 +1,5 @@
 package dev.scarlet.logger
 
-import platform.Foundation.NSLog
 import kotlin.experimental.ExperimentalNativeApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -36,6 +35,6 @@ internal actual object PlatformLogger : Logger {
                 }
             }
         }
-        NSLog("%@", fullMessage)
+        println(fullMessage)
     }
 }

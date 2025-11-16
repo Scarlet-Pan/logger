@@ -11,15 +11,15 @@
 ## 🌐 Why Use It?
 
 - ✅ **Built for Kotlin Multiplatform (KMP)**: Use `Logger` directly in `commonMain` — no `expect/actual`, no conditional compilation.
-- ✅ **Android Log Style**: Familiar `d()`, `i()`, `w()`, `e()` APIs, just like `android.util.Log`. Perfect for Android and Kotlin developers.
-- ✅ **Truly Cross-Platform**: Works out of the box in **KMP libraries**, **KMP apps**, and even **standalone projects** (Android, iOS, JVM, JS).
-- ✅ **Zero Platform Code**: Automatically uses native logging:
+- ✅ **Android Log Style**: Familiar `d()`, `i()`, `w()`, `e()` APIs, just like `android.util.Log`.
+- ✅ **Works Everywhere**: In **KMP libraries**, **Android apps**, **JVM services**, **iOS**, and **JS** — same code, everywhere.
+- ✅ **Zero Platform Code**: Automatically adapts to each platform’s standard output:
     - **Android** → `android.util.Log`
-    - **iOS** → `NSLog`
+    - **iOS** → Standard output (`println`, visible in Xcode console)
     - **JVM** → `System.out`
     - **JS** → `console.log`
 
-> 🎯 **Log in shared code like you always did on Android — it just works everywhere.**
+> 🎯 **Log in shared Kotlin code like you always did on Android — it just works.**
 
 ---
 
@@ -35,16 +35,18 @@ dependencies {
 
 No extra setup. No platform-specific configuration.
 
-> 🔧 **Minimum Requirements**  
-> - Kotlin **≥ 1.9.0**  
-> - Android minSdk **≥ 21**  
+> 🔧 **Minimum Requirements**
+> - Kotlin **≥ 1.9.0** (built with **1.9.24**)
+> - Android minSdk **≥ 21**
 > - iOS deployment target **≥ 12.0**
 
 ---
 
-## 🚀 Usage
+## 🚀 Usage (Kotlin First)
 
-### Log Directly in Common Code
+### ✨ Log in Common Code (KMP)
+
+Perfect for shared logic in `commonMain`:
 
 ```kotlin
 import dev.scarlet.logger.Logger
@@ -55,20 +57,64 @@ Logger.w("App", "Deprecated API used")
 Logger.e("Crash", "Unexpected error", exception)
 ```
 
-✅ Call these from `commonMain` in a KMP library or app.  
-✅ Also works in pure Android, iOS, JVM, or JS projects.  
-✅ No platform checks. No wrappers. Just log.
+✅ Works identically in **Android**, **iOS**, **JVM**, and **JS** targets.  
+✅ No conditional compilation. No wrappers. Just pure Kotlin.
 
-### Combine Loggers with `+`
+---
 
-Send logs to multiple destinations in one line:
+### 🔧 Customize Logging Behavior
+
+Replace or combine loggers using the `+` operator:
 
 ```kotlin
 // Send logs to both system and your custom logger
 Logger.default = Logger.SYSTEM + CustomLogger()
 ```
 
-All subsequent logs will be dispatched to both loggers automatically.
+All subsequent calls to `Logger.*()` will dispatch to both destinations.
+
+You can also implement your own `Logger` by overriding the interface:
+
+```kotlin
+object FileLogger : Logger {
+    override fun d(tag: String, msg: String, tr: Throwable?) {
+        // Write to file, send to remote, etc.
+    }
+    // ... implement i, w, e
+}
+```
+
+Then set it as default:
+
+```kotlin
+Logger.default = FileLogger
+```
+
+---
+
+## ☕ Java Support (Optional)
+
+For mixed Kotlin-Java projects, use the static `DefaultLogger` facade:
+
+```java
+import dev.scarlet.logger.DefaultLogger;
+
+DefaultLogger.d("MainActivity", "User clicked button");
+DefaultLogger.e("Network", "Failed to load data", exception);
+```
+
+To customize the logging pipeline from Java:
+
+```java
+import dev.scarlet.logger.Logger;
+import dev.scarlet.logger.Loggers;
+
+var combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
+Logger.setDefault(combined);
+```
+
+> ℹ️ `DefaultLogger` is a thin static wrapper around `Logger.default`.  
+> All configuration happens via the `Logger` class — not `DefaultLogger`.
 
 ---
 
@@ -83,9 +129,22 @@ fun w(tag: String, msg: String, tr: Throwable? = null)
 fun e(tag: String, msg: String, tr: Throwable? = null)
 ```
 
-- Tag-first design
+- Tag-first design (easy filtering)
 - Optional `Throwable` support (auto stack trace)
-- Fully thread-safe
+- Fully thread-safe and coroutine-friendly
+
+---
+
+## 🌍 Supported Platforms
+
+| Platform | Target | Output Target                     |
+|----------|--------|-----------------------------------|
+| Android  | Android| `android.util.Log`                |
+| iOS      | Native | Standard output (`println`)       |
+| JVM      | JVM    | `System.out`                      |
+| JS       | JS (IR)| `console.log`                     |
+
+> ℹ️ Built with **Kotlin 1.9.24**, compatible with **Kotlin 1.9.0+**.
 
 ---
 
@@ -134,15 +193,15 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 ## 🌐 为什么选择它？
 
 - ✅ **专为 Kotlin 多平台（KMP）设计**：在 `commonMain` 中直接调用 `Logger`，无需 `expect/actual`，无需条件编译。
-- ✅ **Android 日志风格**：提供与 `android.util.Log` 完全一致的 `d()`、`i()`、`w()`、`e()` 接口，Android/Kotlin 开发者秒上手。
-- ✅ **真正跨平台**：既适用于 **KMP 库** 和 **KMP 应用**，也适用于 **纯 Android、iOS、JVM 或 JS 项目**。
-- ✅ **零平台代码**：自动桥接各平台原生日志系统：
-    - **Android** → `android.util.Log`
-    - **iOS** → `NSLog`
-    - **JVM** → `System.out`
-    - **JS** → `console.log`
+- ✅ **Android 日志风格**：提供与 `android.util.Log` 完全一致的 `d()`、`i()`、`w()`、`e()` 接口。
+- ✅ **全平台通用**：适用于 **KMP 库**、**Android 应用**、**JVM 服务**、**iOS** 和 **JS** —— 同一份代码，处处运行。
+- ✅ **零平台代码**：自动适配各平台的标准输出方式：
+  - **Android** → `android.util.Log`
+  - **iOS** → 标准输出（`println`，Xcode 控制台可见）
+  - **JVM** → `System.out`
+  - **JS** → `console.log`
 
-> 🎯 **在共享代码中像写 Android 一样打日志 —— 一次编写，处处运行。**
+> 🎯 **在共享 Kotlin 代码中像写 Android 一样打日志 —— 开箱即用。**
 
 ---
 
@@ -158,16 +217,18 @@ dependencies {
 
 无需额外配置，开箱即用。
 
-> 🔧 **最低要求**  
-> - Kotlin **≥ 1.9.0**  
-> - Android minSdk **≥ 21**  
+> 🔧 **最低要求**
+> - Kotlin **≥ 1.9.0**（基于 **1.9.24** 构建）
+> - Android minSdk **≥ 21**
 > - iOS 部署目标 **≥ 12.0**
 
 ---
 
-## 🚀 使用方法
+## 🚀 使用方法（Kotlin 优先）
 
-### 在公共代码中直接打日志
+### ✨ 在公共代码中打日志（KMP）
+
+适用于 `commonMain` 中的共享逻辑：
 
 ```kotlin
 import dev.scarlet.logger.Logger
@@ -178,20 +239,64 @@ Logger.w("App", "Deprecated API used")
 Logger.e("Crash", "Unexpected error", exception)
 ```
 
-✅ 在 **KMP 库或应用的 `commonMain`** 中直接调用；  
-✅ 在 **纯 Android / iOS / JVM / JS 项目** 中同样可用；  
-✅ **无需任何平台判断或依赖**，就像写普通 Kotlin 代码一样自然。
+✅ 在 **Android**、**iOS**、**JVM** 和 **JS** 上行为一致。  
+✅ 无需平台判断，无需包装，纯 Kotlin 即可。
 
-### 使用 `+` 组合日志器
+---
 
-想同时输出到多个目标？一行代码即可：
+### 🔧 自定义日志行为
+
+使用 `+` 操作符组合多个日志器：
 
 ```kotlin
-// 同时发送日志到系统日志器和你的自定义日志器
+// Send logs to both system and your custom logger
 Logger.default = Logger.SYSTEM + CustomLogger()
 ```
 
-此后所有日志将自动分发给两个日志器。
+后续所有 `Logger.*()` 调用都会分发到两个目标。
+
+你也可以实现自己的 `Logger`：
+
+```kotlin
+object FileLogger : Logger {
+    override fun d(tag: String, msg: String, tr: Throwable?) {
+        // Write to file, send to remote, etc.
+    }
+    // ... implement i, w, e
+}
+```
+
+然后设为默认：
+
+```kotlin
+Logger.default = FileLogger
+```
+
+---
+
+## ☕ Java 支持（可选）
+
+在 Kotlin-Java 混合项目中，可通过静态门面 `DefaultLogger` 调用：
+
+```java
+import dev.scarlet.logger.DefaultLogger;
+
+DefaultLogger.d("MainActivity", "User clicked button");
+DefaultLogger.e("Network", "Failed to load data", exception);
+```
+
+如需自定义日志管道，通过 `Logger` 类配置：
+
+```java
+import dev.scarlet.logger.Logger;
+import dev.scarlet.logger.Loggers;
+
+var combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
+Logger.setDefault(combined);
+```
+
+> ℹ️ `DefaultLogger` 是对 `Logger.default` 的静态封装。  
+> 所有配置均通过 `Logger` 类完成，而非 `DefaultLogger`。
 
 ---
 
@@ -214,14 +319,14 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ## 🌍 支持的平台
 
-| 平台    | 目标平台 | 输出目标             |
-|---------|----------|----------------------|
-| Android | Android  | `android.util.Log`   |
-| iOS     | Native   | `NSLog`              |
-| JVM     | JVM      | `System.out`         |
-| JS      | JS (IR)  | `console.log`        |
+| 平台    | 目标平台 | 输出目标                     |
+|---------|----------|------------------------------|
+| Android | Android  | `android.util.Log`           |
+| iOS     | Native   | 标准输出（`println`）        |
+| JVM     | JVM      | `System.out`                 |
+| JS      | JS (IR)  | `console.log`                |
 
-> ℹ️ 基于 **Kotlin 1.9.23** 构建，兼容 **Kotlin 1.9.0 及以上版本**。
+> ℹ️ 基于 **Kotlin 1.9.24** 构建，兼容 **Kotlin 1.9.0 及以上版本**。
 
 ---
 
