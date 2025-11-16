@@ -4,6 +4,7 @@
 [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
 [![Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
 [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
+[![Test Status](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml)
 [![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
@@ -183,6 +184,7 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 [![Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
 [![支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
 [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
+[![测试状态](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml)
 [![许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
