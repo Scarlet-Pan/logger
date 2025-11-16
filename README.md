@@ -1,10 +1,10 @@
 # Logger
 
-[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
-[[Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
-[[Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
-[[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
-[[License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)
+[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
+[![Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
+[![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
+[![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -44,9 +44,7 @@ No extra setup. No platform-specific configuration.
 
 ## 🚀 Usage (Kotlin First)
 
-### ✨ Log in Common Code (KMP)
-
-Perfect for shared logic in `commonMain`:
+Whether you're building a **Kotlin Multiplatform library**, an **Android app**, or a **JVM service**, the API is identical:
 
 ```kotlin
 import dev.scarlet.logger.Logger
@@ -57,8 +55,15 @@ Logger.w("App", "Deprecated API used")
 Logger.e("Crash", "Unexpected error", exception)
 ```
 
-✅ Works identically in **Android**, **iOS**, **JVM**, and **JS** targets.  
-✅ No conditional compilation. No wrappers. Just pure Kotlin.
+✅ Works out-of-the-box in:
+- `commonMain` of KMP projects
+- Android app modules (`androidMain`)
+- Pure JVM applications (`jvmMain`)
+- iOS and JS targets (via KMP)
+
+No platform-specific code. No conditional compilation. Just Kotlin.
+
+> 💡 This is the **primary and recommended** way to use `Logger`.
 
 ---
 
@@ -92,9 +97,11 @@ Logger.default = FileLogger
 
 ---
 
-## ☕ Java Support (Optional)
+### ☕ Java Interoperability (Optional)
 
-For mixed Kotlin-Java projects, use the static `DefaultLogger` facade:
+Although designed for Kotlin, this library is fully usable from **Java projects targeting the JVM** thanks to Kotlin/JVM bytecode compatibility.
+
+Use the static facade for convenience:
 
 ```java
 import dev.scarlet.logger.DefaultLogger;
@@ -103,18 +110,20 @@ DefaultLogger.d("MainActivity", "User clicked button");
 DefaultLogger.e("Network", "Failed to load data", exception);
 ```
 
-To customize the logging pipeline from Java:
+To customize the logging pipeline (e.g., combine with a custom logger):
 
 ```java
 import dev.scarlet.logger.Logger;
 import dev.scarlet.logger.Loggers;
 
-var combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
+Logger combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
 Logger.setDefault(combined);
 ```
 
-> ℹ️ `DefaultLogger` is a thin static wrapper around `Logger.default`.  
-> All configuration happens via the `Logger` class — not `DefaultLogger`.
+> ⚠️ Note:  
+> - The `DefaultLogger` class exists **only for Java interop**.  
+> - All advanced features (e.g., custom loggers) should be configured via Kotlin.  
+> - This is **not a Java-first logging framework** — Kotlin is the primary language.
 
 ---
 
@@ -137,27 +146,15 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ## 🌍 Supported Platforms
 
-| Platform | Target | Output Target                     |
-|----------|--------|-----------------------------------|
-| Android  | Android| `android.util.Log`                |
-| iOS      | Native | Standard output (`println`)       |
-| JVM      | JVM    | `System.out`                      |
-| JS       | JS (IR)| `console.log`                     |
+| Platform | Logging Backend        |
+|----------|------------------------|
+| Android  | `android.util.Log`     |
+| iOS      | `println()`            |
+| JVM      | `System.out`           |
+| JS (IR)  | `console.log`          |
 
-> ℹ️ Built with **Kotlin 1.9.24**, compatible with **Kotlin 1.9.0+**.
-
----
-
-## 🌍 Supported Platforms
-
-| Platform | Target | Output Target        |
-|----------|--------|----------------------|
-| Android  | Android| `android.util.Log`   |
-| iOS      | Native | `NSLog`              |
-| JVM      | JVM    | `System.out`         |
-| JS       | JS (IR)| `console.log`        |
-
-> ℹ️ Built with **Kotlin 1.9.23**, compatible with **Kotlin 1.9.0+**.
+> ℹ️ Built with **Kotlin 1.9.24**, compatible with **Kotlin 1.9.0+**.  
+> Java projects can consume the **JVM artifact** via standard Maven/Gradle dependencies.
 
 ---
 
@@ -182,11 +179,11 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 
 # Logger
 
-[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
-[[Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
-[[支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
-[[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
-[[许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)
+[![Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
+[![支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
+[![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
+[![许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -226,9 +223,7 @@ dependencies {
 
 ## 🚀 使用方法（Kotlin 优先）
 
-### ✨ 在公共代码中打日志（KMP）
-
-适用于 `commonMain` 中的共享逻辑：
+无论你是在开发 **Kotlin 多平台库**、**Android 应用**，还是 **JVM 服务**，API 完全一致：
 
 ```kotlin
 import dev.scarlet.logger.Logger
@@ -239,8 +234,15 @@ Logger.w("App", "Deprecated API used")
 Logger.e("Crash", "Unexpected error", exception)
 ```
 
-✅ 在 **Android**、**iOS**、**JVM** 和 **JS** 上行为一致。  
-✅ 无需平台判断，无需包装，纯 Kotlin 即可。
+✅ 开箱即用于：
+- KMP 项目的 `commonMain`
+- Android 应用模块（`androidMain`）
+- 纯 JVM 应用（`jvmMain`）
+- iOS 和 JS 目标（通过 KMP）
+
+无需平台判断，无需条件编译，只需标准 Kotlin。
+
+> 💡 这是 **推荐且主要** 的使用方式。
 
 ---
 
@@ -274,9 +276,11 @@ Logger.default = FileLogger
 
 ---
 
-## ☕ Java 支持（可选）
+### ☕ Java 互操作支持（可选）
 
-在 Kotlin-Java 混合项目中，可通过静态门面 `DefaultLogger` 调用：
+虽然本库为 Kotlin 设计，但得益于 Kotlin/JVM 的字节码兼容性，**纯 Java 项目也可正常使用 JVM 版本**。
+
+可通过静态门面类便捷调用：
 
 ```java
 import dev.scarlet.logger.DefaultLogger;
@@ -285,18 +289,20 @@ DefaultLogger.d("MainActivity", "User clicked button");
 DefaultLogger.e("Network", "Failed to load data", exception);
 ```
 
-如需自定义日志管道，通过 `Logger` 类配置：
+如需自定义日志管道（例如组合自定义日志器）：
 
 ```java
 import dev.scarlet.logger.Logger;
 import dev.scarlet.logger.Loggers;
 
-var combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
+Logger combined = Loggers.combine(Logger.getDefault(), new CustomLogger());
 Logger.setDefault(combined);
 ```
 
-> ℹ️ `DefaultLogger` 是对 `Logger.default` 的静态封装。  
-> 所有配置均通过 `Logger` 类完成，而非 `DefaultLogger`。
+> ⚠️ 注意：  
+> - `DefaultLogger` 类 **仅用于 Java 互操作**。  
+> - 所有高级功能（如自定义日志器）建议通过 Kotlin 配置。  
+> - 本库 **并非 Java 优先的日志框架** —— Kotlin 是主要语言。
 
 ---
 
@@ -319,14 +325,15 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ## 🌍 支持的平台
 
-| 平台    | 目标平台 | 输出目标                     |
-|---------|----------|------------------------------|
-| Android | Android  | `android.util.Log`           |
-| iOS     | Native   | 标准输出（`println`）        |
-| JVM     | JVM      | `System.out`                 |
-| JS      | JS (IR)  | `console.log`                |
+| 平台    | 日志后端              |
+|---------|-----------------------|
+| Android | `android.util.Log`    |
+| iOS     | `println()`           |
+| JVM     | `System.out`          |
+| JS (IR) | `console.log`         |
 
-> ℹ️ 基于 **Kotlin 1.9.24** 构建，兼容 **Kotlin 1.9.0 及以上版本**。
+> ℹ️ 基于 **Kotlin 1.9.24** 构建，兼容 **Kotlin 1.9.0 及以上版本**。  
+> Java 项目可通过标准 Maven/Gradle 依赖使用 **JVM 工件**。
 
 ---
 
