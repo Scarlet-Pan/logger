@@ -1,6 +1,5 @@
 package dev.scarlet.logger
 
-import platform.Foundation.NSLog
 import kotlin.experimental.ExperimentalNativeApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -31,12 +30,11 @@ internal actual object PlatformLogger : Logger {
             if (tr != null) {
                 val type = tr::class.simpleName ?: tr::class.qualifiedName ?: "Exception"
                 append(" $type: ${tr.message}")
-                // 可选：打印堆栈跟踪（在 Kotlin/Native 中堆栈信息有限）
                 tr.getStackTrace().forEach { frame ->
                     append("\n  at $frame")
                 }
             }
         }
-        NSLog("%@", fullMessage)
+        println(fullMessage)
     }
 }
