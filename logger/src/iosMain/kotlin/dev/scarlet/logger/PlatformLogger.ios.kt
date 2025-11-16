@@ -1,5 +1,7 @@
 package dev.scarlet.logger
 
+import kotlin.experimental.ExperimentalNativeApi
+
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual object PlatformLogger : Logger {
 
@@ -21,6 +23,7 @@ internal actual object PlatformLogger : Logger {
         log("ERROR", tag, msg, tr)
     }
 
+    @OptIn(ExperimentalNativeApi::class)
     private fun log(level: String, tag: String, msg: String, tr: Throwable?) {
         val fullMessage = buildString {
             append("[$level] $tag: $msg")
