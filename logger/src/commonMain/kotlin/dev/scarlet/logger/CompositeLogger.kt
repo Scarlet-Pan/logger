@@ -1,4 +1,10 @@
+@file:JvmName("Loggers")
+@file:JvmMultifileClass
+
 package dev.scarlet.logger
+
+import kotlin.jvm.JvmMultifileClass
+import kotlin.jvm.JvmName
 
 /**
  * A composite logger that combines two [Logger] instances.
@@ -60,4 +66,5 @@ internal class CompositeLogger(
  * @param other The logger to combine with this one.
  * @return A new [Logger] instance that sends each log message first to `this`, then to [other].
  */
+@JvmName("combine")
 operator fun Logger.plus(other: Logger): Logger = CompositeLogger(this, other)

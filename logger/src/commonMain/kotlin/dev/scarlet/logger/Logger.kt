@@ -2,6 +2,7 @@ package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Companion.SYSTEM
 import dev.scarlet.logger.Logger.Companion.default
+import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
 @Suppress("ObjectPropertyName")
@@ -54,6 +55,7 @@ interface Logger {
          */
         @JvmStatic
         val SYSTEM: Logger = PlatformLogger
+            @JvmName("getSystem") get
 
         /**
          * The global default logger instance.
@@ -72,6 +74,7 @@ interface Logger {
          *
          * @see SYSTEM
          */
+        @JvmStatic
         var default: Logger
             get() = _default
             set(value) {
