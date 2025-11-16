@@ -148,6 +148,19 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ---
 
+## 🌍 Supported Platforms
+
+| Platform | Target | Output Target        |
+|----------|--------|----------------------|
+| Android  | Android| `android.util.Log`   |
+| iOS      | Native | `NSLog`              |
+| JVM      | JVM    | `System.out`         |
+| JS       | JS (IR)| `console.log`        |
+
+> ℹ️ Built with **Kotlin 1.9.23**, compatible with **Kotlin 1.9.0+**.
+
+---
+
 ## 🤝 Contributing
 
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
