@@ -13,7 +13,13 @@ version = "1.0.0"
 
 kotlin {
 
-    jvm()
+    jvm {
+        compilations.configureEach {
+            compilerOptions.configure {
+                jvmTarget.set(JvmTarget.JVM_1_8)
+            }
+        }
+    }
 
     androidLibrary {
         namespace = "dev.scarlet.logger"
@@ -33,9 +39,7 @@ kotlin {
         }
         compilations.configureEach {
             compilerOptions.configure {
-                jvmTarget.set(
-                    JvmTarget.JVM_1_8
-                )
+                jvmTarget.set(JvmTarget.JVM_1_8)
             }
         }
     }
