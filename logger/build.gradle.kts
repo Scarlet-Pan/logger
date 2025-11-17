@@ -9,11 +9,17 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.0.0-rc02"
+version = "1.0.0"
 
 kotlin {
 
-    jvm()
+    jvm {
+        compilations.configureEach {
+            compilerOptions.configure {
+                jvmTarget.set(JvmTarget.JVM_1_8)
+            }
+        }
+    }
 
     androidLibrary {
         namespace = "dev.scarlet.logger"
@@ -33,9 +39,7 @@ kotlin {
         }
         compilations.configureEach {
             compilerOptions.configure {
-                jvmTarget.set(
-                    JvmTarget.JVM_1_8
-                )
+                jvmTarget.set(JvmTarget.JVM_1_8)
             }
         }
     }
