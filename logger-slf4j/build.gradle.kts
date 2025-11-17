@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = libs.versions.logger.slf4j
+version = libs.versions.logger.slf4j.get()
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
