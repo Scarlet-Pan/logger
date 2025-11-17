@@ -1,6 +1,6 @@
 # Logger
 
-[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
+[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm)  
 [[Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
 [[Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
 [[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
@@ -211,7 +211,7 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 
 # Logger
 
-[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)  
+[[Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm)  
 [[Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)  
 [[支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()  
 [[Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)  
