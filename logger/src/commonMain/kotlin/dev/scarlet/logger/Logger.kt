@@ -2,6 +2,10 @@ package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Companion.SYSTEM
 import dev.scarlet.logger.Logger.Companion.default
+import dev.scarlet.logger.Logger.Level.DEBUG
+import dev.scarlet.logger.Logger.Level.ERROR
+import dev.scarlet.logger.Logger.Level.INFO
+import dev.scarlet.logger.Logger.Level.WARN
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
 
@@ -139,4 +143,31 @@ interface Logger {
      * @param tr An optional throwable (recommended to provide).
      */
     fun e(tag: String, msg: String, tr: Throwable? = null)
+
+    /**
+     * Log severity levels.
+     *
+     * These levels indicate the importance and intended audience of a log message.
+     * They are ordered from least to most severe:
+     * [DEBUG] < [INFO] < [WARN] < [ERROR].
+     *
+     * - [DEBUG]: Detailed diagnostic information, typically useful only during development or troubleshooting.
+     * - [INFO]: General operational messages that confirm expected behavior (e.g., service startup, state changes).
+     * - [WARN]: Indicates an unexpected or unusual condition that might become a problem later, but the system is still functioning normally.
+     * - [ERROR]: Represents a serious failure that prevents a feature or operation from completing successfully.
+     *
+     * Example usage:
+     * ```kotlin
+     * Logger.d("App", "Initializing database connection...") // DEBUG
+     * Logger.i("App", "Service started successfully.")       // INFO
+     * Logger.w("App", "Config file missing; using defaults.") // WARN
+     * Logger.e("App", "Failed to connect to database.")      // ERROR
+     * ```
+     * @author Scarlet Pan
+     * @version 1.0.0
+     */
+    enum class Level {
+        DEBUG, INFO, WARN, ERROR
+    }
+
 }
