@@ -78,6 +78,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
@@ -95,6 +96,7 @@ kotlin {
 
         getByName("androidTestOnJvm") {
             dependencies {
+                implementation(libs.junit)
                 implementation(libs.robolectric)
             }
         }
