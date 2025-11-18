@@ -1,9 +1,10 @@
 package dev.scarlet.logger
 
-import dev.scarlet.logger.PlatformLogger.Level.DEBUG
-import dev.scarlet.logger.PlatformLogger.Level.ERROR
-import dev.scarlet.logger.PlatformLogger.Level.INFO
-import dev.scarlet.logger.PlatformLogger.Level.WARN
+import dev.scarlet.logger.Logger.Level
+import dev.scarlet.logger.Logger.Level.DEBUG
+import dev.scarlet.logger.Logger.Level.ERROR
+import dev.scarlet.logger.Logger.Level.INFO
+import dev.scarlet.logger.Logger.Level.WARN
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal actual object PlatformLogger : Logger {
@@ -43,7 +44,4 @@ internal actual object PlatformLogger : Logger {
         return dynamicError
     }
 
-    private enum class Level {
-        DEBUG, INFO, WARN, ERROR
-    }
 }

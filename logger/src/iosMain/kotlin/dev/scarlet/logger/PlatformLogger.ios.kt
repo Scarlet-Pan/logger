@@ -1,5 +1,10 @@
 package dev.scarlet.logger
 
+import dev.scarlet.logger.Logger.Level
+import dev.scarlet.logger.Logger.Level.DEBUG
+import dev.scarlet.logger.Logger.Level.ERROR
+import dev.scarlet.logger.Logger.Level.INFO
+import dev.scarlet.logger.Logger.Level.WARN
 import kotlin.experimental.ExperimentalNativeApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
@@ -8,23 +13,23 @@ internal actual object PlatformLogger : Logger {
     actual override fun toString(): String = "iOSLogger"
 
     actual override fun d(tag: String, msg: String, tr: Throwable?) {
-        log("DEBUG", tag, msg, tr)
+        log(DEBUG, tag, msg, tr)
     }
 
     actual override fun i(tag: String, msg: String, tr: Throwable?) {
-        log("INFO", tag, msg, tr)
+        log(INFO, tag, msg, tr)
     }
 
     actual override fun w(tag: String, msg: String, tr: Throwable?) {
-        log("WARN", tag, msg, tr)
+        log(WARN, tag, msg, tr)
     }
 
     actual override fun e(tag: String, msg: String, tr: Throwable?) {
-        log("ERROR", tag, msg, tr)
+        log(ERROR, tag, msg, tr)
     }
 
     @OptIn(ExperimentalNativeApi::class)
-    private fun log(level: String, tag: String, msg: String, tr: Throwable?) {
+    private fun log(level: Level, tag: String, msg: String, tr: Throwable?) {
         val fullMessage = buildString {
             append("[$level] $tag: $msg")
             if (tr != null) {
