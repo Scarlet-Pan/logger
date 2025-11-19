@@ -4,8 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release (e.g., 1.1.0-alpha03)'
+        description: 'Semantic version WITHOUT prefix (e.g., 1.0.0)'
         required: true
+        type: string
 
 jobs:
   release:
@@ -24,55 +25,23 @@ jobs:
       - name: Grant execute permission
         run: chmod +x ./gradlew
 
-      # 构建三个 iOS framework
-      - name: Build iOS Frameworks
-        run: |
-          ./gradlew \
-            :logger:linkReleaseFrameworkIosArm64 \
-            :logger:linkReleaseFrameworkIosSimulatorArm64 \
-            :logger:linkReleaseFrameworkIosX64
+      - name: Build XCFramework and generate Podspec
+        run: ./gradlew :logger:buildXCFramework
 
-      # 合并为 XCFramework
-      - name: Create XCFramework
-        run: |
-          xcodebuild -create-xcframework \
-            -framework logger/build/bin/iosArm64/releaseFramework/loggerKit.framework \
-            -framework logger/build/bin/iosSimulatorArm64/releaseFramework/loggerKit.framework \
-            -framework logger/build/bin/iosX64/releaseFramework/loggerKit.framework \
-            -output loggerKit.xcframework
-
-      # 生成 .podspec（version = 输入的 version）
-      - name: Generate Podspec
-        run: |
-          VERSION="${{ github.event.inputs.version }}"
-          cat > loggerKit.podspec <<EOF
-          Pod::Spec.new do |s|
-            s.name         = 'loggerKit'
-            s.version      = '$VERSION'
-            s.summary      = 'Kotlin Multiplatform logging library'
-            s.homepage     = 'https://github.com/Scarlet-Pan/logger'
-            s.license      = { :type => 'MIT', :file => 'LICENSE' }
-            s.authors      = { 'Scarlet Pan' => 'your@email.com' }
-            s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$VERSION' }
-            s.source_files = 'dummy.swift'
-            s.vendored_frameworks = 'loggerKit.xcframework'
-            s.ios.deployment_target = '12.0'
-            s.swift_version = '5.0'
-          end
-          EOF
-
-      - name: Create dummy.swift
+      - name: Create dummy.swift (required by CocoaPods)
         run: touch dummy.swift
 
-      # 提交并打标准 tag（无前缀！）
-      - name: Commit and Tag
+      - name: Commit artifacts and create prefixed tag
         run: |
+          SEMANTIC_VERSION="${{ github.event.inputs.version }}"
+          TAG_NAME="logger/$SEMANTIC_VERSION"
+
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
+
           git add loggerKit.xcframework loggerKit.podspec dummy.swift
-          git commit -m "Release ${{ github.event.inputs.version }} for CocoaPods"
-          git tag ${{ github.event.inputs.version }}  # ← 关键：tag = 1.1.0-alpha03
-          
+          git commit -m "Release $TAG_NAME for CocoaPods"
+          git tag "$TAG_NAME"
+
           git push origin HEAD:${GITHUB_REF#refs/heads/}
-          git push origin ${{ github.event.inputs.version }}
+          git push origin "$TAG_NAME"
