@@ -198,24 +198,25 @@ tasks.register<Exec>("buildXCFramework") {
     dependsOn("generatePodspec")
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
-    val output = layout.projectDirectory.file("$xcfName.xcframework").asFile
+    val output = layout.projectDirectory.file("${xcfName}.xcframework").asFile
     if (output.exists()) output.deleteRecursively()
+
+    val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
+    val simFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
+
+    if (!deviceFramework.exists()) throw RuntimeException("Device framework not found: ${deviceFramework.absolutePath}")
+    if (!simFramework.exists()) throw RuntimeException("Simulator framework not found: ${simFramework.absolutePath}")
 
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
-        "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/$xcfName.framework").get().asFile.absolutePath,
-        "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/$xcfName.framework").get().asFile.absolutePath,
-        "-framework", layout.buildDirectory.file("bin/iosX64/releaseFramework/$xcfName.framework").get().asFile.absolutePath
+        "-framework", deviceFramework.absolutePath,
+        "-framework", simFramework.absolutePath
     )
 
-    dependsOn(
-        "linkReleaseFrameworkIosArm64",
-        "linkReleaseFrameworkIosSimulatorArm64",
-        "linkReleaseFrameworkIosX64"
-    )
+    dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
 
     doLast {
-        println("✅ Built $xcfName.xcframework at ${output.absolutePath}")
+        println("✅ XCFramework built at: ${output.absolutePath}")
     }
 }
