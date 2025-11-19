@@ -161,39 +161,15 @@ signing {
     sign(publishing.publications)
 }
 
-tasks.register<Copy>("generatePodspec") {
-    val semanticVersion = project.version.toString() // "1.0.0-alpha03"
-    val podspecVersion = "logger/$semanticVersion"   // "logger/1.0.0-alpha03"
-
-    val podspecContent = """
-        Pod::Spec.new do |s|
-          s.name         = '$xcfName'
-          s.version      = '$podspecVersion'
-          s.summary      = 'Kotlin Multiplatform logging library for iOS'
-          s.homepage     = 'https://github.com/Scarlet-Pan/logger'
-          s.license      = { :type => 'MIT', :file => '../LICENSE' }
-          s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
-          s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$podspecVersion' }
-          s.source_files = 'dummy.swift'
-          s.vendored_frameworks = '$xcfName.xcframework'
-          s.ios.deployment_target = '12.0'
-          s.swift_version = '5.0'
-        end
-    """.trimIndent()
-
-    outputs.file(layout.projectDirectory.file("$xcfName.podspec"))
-    doLast {
-        layout.projectDirectory.file("$xcfName.podspec").asFile.writeText(podspecContent)
-        println("✅ Generated $xcfName.podspec with version: $podspecVersion")
-    }
-}
-
 tasks.register<Exec>("buildXCFramework") {
-    dependsOn("generatePodspec")
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
     val rootDir = project.rootDir
     val output = File(rootDir, "${xcfName}.xcframework")
+    val version = project.version.toString()
+
+    // Ensure frameworks are built
+    dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
 
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
@@ -202,8 +178,6 @@ tasks.register<Exec>("buildXCFramework") {
         "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath
     )
 
-    dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
-
     doLast {
         val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
         val simFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
@@ -211,16 +185,15 @@ tasks.register<Exec>("buildXCFramework") {
         if (!deviceFramework.exists()) throw RuntimeException("Device framework missing!")
         if (!simFramework.exists()) throw RuntimeException("Simulator framework missing!")
 
-        // Generate podspec in root dir
         File(rootDir, "${xcfName}.podspec").writeText("""
             Pod::Spec.new do |s|
               s.name         = '$xcfName'
-              s.version      = 'logger/${project.version}'
+              s.version      = '$version'
               s.summary      = 'Kotlin Multiplatform logging library for iOS'
               s.homepage     = 'https://github.com/Scarlet-Pan/logger'
               s.license      = { :type => 'MIT', :file => 'LICENSE' }
               s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
-              s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => 'logger/${project.version}' }
+              s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$version' }
               s.source_files = 'dummy.swift'
               s.vendored_frameworks = '$xcfName.xcframework'
               s.ios.deployment_target = '12.0'
@@ -228,6 +201,6 @@ tasks.register<Exec>("buildXCFramework") {
             end
         """.trimIndent())
 
-        println("✅ Success: $xcfName.xcframework and .podspec ready in root directory")
+        println("✅ Success: $xcfName.xcframework and $xcfName.podspec generated (version: $version)")
     }
 }
