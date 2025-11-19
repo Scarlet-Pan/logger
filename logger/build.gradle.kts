@@ -171,6 +171,13 @@ tasks.register<Exec>("buildXCFramework") {
     // Ensure frameworks are built
     dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
 
+    doFirst {
+        if (output.exists()) {
+            println("🗑️ Deleting existing $output")
+            output.deleteRecursively()
+        }
+    }
+
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
@@ -185,6 +192,7 @@ tasks.register<Exec>("buildXCFramework") {
         if (!deviceFramework.exists()) throw RuntimeException("Device framework missing!")
         if (!simFramework.exists()) throw RuntimeException("Simulator framework missing!")
 
+        // ✅ Generate CORRECT .podspec with pure version
         File(rootDir, "${xcfName}.podspec").writeText("""
             Pod::Spec.new do |s|
               s.name         = '$xcfName'
