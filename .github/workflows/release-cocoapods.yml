@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semantic version (e.g., 1.0.0)'
+        description: 'Semantic version (e.g., 1.1.0-alpha06)'
         required: true
         type: string
 
@@ -38,44 +38,38 @@ jobs:
         run: |
           if [ ! -d "loggerKit.xcframework" ]; then
             echo "❌ loggerKit.xcframework not found in project root!"
-            echo "Contents of current directory:"
             ls -la
             exit 1
           fi
-          echo "✅ Found loggerKit.xcframework in project root"
+          echo "✅ Found loggerKit.xcframework"
 
       - name: Ensure loggerKit.podspec is in root
         run: |
-          # If podspec is inside logger/ submodule, copy it to root
           if [ ! -f "loggerKit.podspec" ]; then
             if [ -f "logger/loggerKit.podspec" ]; then
               cp logger/loggerKit.podspec ./loggerKit.podspec
               echo "✅ Copied loggerKit.podspec to root"
             else
-              echo "❌ loggerKit.podspec not found in root or logger/ directory!"
+              echo "❌ loggerKit.podspec not found in logger/ or root!"
               exit 1
             fi
           else
             echo "✅ loggerKit.podspec already in root"
           fi
 
-      - name: Create dummy.swift (required by CocoaPods)
-        run: touch dummy.swift
-
       - name: Verify framework header contains Logger class
         run: |
           HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
           if [ ! -f "$HEADER" ]; then
-            echo "❌ Header file not found at $HEADER"
+            echo "❌ Header file missing at $HEADER"
             exit 1
           fi
           if ! grep -q "@interface Logger" "$HEADER"; then
-            echo "❌ Logger class not declared in header file!"
-            echo "Header preview:"
+            echo "❌ Logger class not exported in header!"
             head -n 20 "$HEADER"
             exit 1
           fi
-          echo "✅ Header contains @interface Logger — API is exported correctly"
+          echo "✅ Logger class correctly exported"
 
       - name: Commit artifacts and create Git tag
         env:
@@ -84,12 +78,10 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          # Add only the necessary files for CocoaPods
-          git add loggerKit.xcframework loggerKit.podspec dummy.swift
+          git add loggerKit.xcframework loggerKit.podspec
 
           git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
           git tag "$SEMANTIC_VERSION"
 
-          # Push commit and tag
           git push origin HEAD:${GITHUB_REF#refs/heads/}
           git push origin "$SEMANTIC_VERSION"
