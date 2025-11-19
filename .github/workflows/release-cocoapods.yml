@@ -25,7 +25,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Grant execute permission
+      - name: Grant execute permission for Gradle
         run: chmod +x ./gradlew
 
       - name: Clean previous builds
@@ -34,44 +34,62 @@ jobs:
       - name: Build XCFramework for :logger module
         run: ./gradlew :logger:buildXCFramework
 
-      - name: Copy and rename XCFramework to root
+      - name: Verify loggerKit.xcframework exists in root
         run: |
-          SOURCE="logger/build/XCFrameworks/logger.xcframework"
-          DEST="loggerKit.xcframework"
-          if [ ! -d "$SOURCE" ]; then
-            echo "❌ Build failed: $SOURCE not found"
+          if [ ! -d "loggerKit.xcframework" ]; then
+            echo "❌ loggerKit.xcframework not found in project root!"
+            echo "Contents of current directory:"
+            ls -la
             exit 1
           fi
-          rm -rf "$DEST"
-          cp -R "$SOURCE" "$DEST"
-          echo "✅ Framework copied to $DEST"
+          echo "✅ Found loggerKit.xcframework in project root"
 
-      - name: Copy podspec to root (if needed)
-        run: cp logger/loggerKit.podspec ./loggerKit.podspec
+      - name: Ensure loggerKit.podspec is in root
+        run: |
+          # If podspec is inside logger/ submodule, copy it to root
+          if [ ! -f "loggerKit.podspec" ]; then
+            if [ -f "logger/loggerKit.podspec" ]; then
+              cp logger/loggerKit.podspec ./loggerKit.podspec
+              echo "✅ Copied loggerKit.podspec to root"
+            else
+              echo "❌ loggerKit.podspec not found in root or logger/ directory!"
+              exit 1
+            fi
+          else
+            echo "✅ loggerKit.podspec already in root"
+          fi
 
-      - name: Create dummy.swift
+      - name: Create dummy.swift (required by CocoaPods)
         run: touch dummy.swift
 
-      - name: Verify framework content
+      - name: Verify framework header contains Logger class
         run: |
           HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
-          if ! grep -q "@interface Logger" "$HEADER"; then
-            echo "❌ Logger class not found in header!"
+          if [ ! -f "$HEADER" ]; then
+            echo "❌ Header file not found at $HEADER"
             exit 1
           fi
-          echo "✅ Header contains Logger interface"
+          if ! grep -q "@interface Logger" "$HEADER"; then
+            echo "❌ Logger class not declared in header file!"
+            echo "Header preview:"
+            head -n 20 "$HEADER"
+            exit 1
+          fi
+          echo "✅ Header contains @interface Logger — API is exported correctly"
 
-      - name: Commit artifacts and create tag
+      - name: Commit artifacts and create Git tag
         env:
           SEMANTIC_VERSION: ${{ github.event.inputs.version }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Add only the necessary files for CocoaPods
           git add loggerKit.xcframework loggerKit.podspec dummy.swift
 
           git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
           git tag "$SEMANTIC_VERSION"
 
+          # Push commit and tag
           git push origin HEAD:${GITHUB_REF#refs/heads/}
           git push origin "$SEMANTIC_VERSION"
