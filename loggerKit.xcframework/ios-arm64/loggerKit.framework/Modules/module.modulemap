@@ -1,8 +1,0 @@
-framework module loggerKit {
-    umbrella header "loggerKit.h"
-
-    export *
-    module * { export * }
-
-    use Foundation
-}

@@ -204,7 +204,6 @@ tasks.register<Exec>("buildXCFramework") {
               s.license      = { :type => 'MIT', :file => 'LICENSE' }
               s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
               s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$version' }
-              s.source_files = 'dummy.swift'
               s.vendored_frameworks = '$xcfName.xcframework'
               s.ios.deployment_target = '12.0'
               s.swift_version = '5.0'
