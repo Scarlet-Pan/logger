@@ -1,17 +1,19 @@
-# .github/workflows/release-cocoapods.yml
 name: Release for CocoaPods
 
 on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semantic version WITHOUT prefix (e.g., 1.0.0)'
+        description: 'Semantic version (e.g., 1.0.0)'
         required: true
         type: string
 
 jobs:
   release:
     runs-on: macos-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -29,20 +31,20 @@ jobs:
       - name: Build XCFramework for :logger module
         run: ./gradlew :logger:buildXCFramework
 
-      - name: Create dummy.swift (required by CocoaPods)
+      - name: Create dummy.swift
         run: touch dummy.swift
 
-      - name: Commit artifacts and create prefixed tag
+      - name: Commit artifacts and create tag
+        env:
+          SEMANTIC_VERSION: ${{ github.event.inputs.version }}
         run: |
-          SEMANTIC_VERSION="${{ github.event.inputs.version }}"
-          TAG_NAME="logger/$SEMANTIC_VERSION"
-
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           git add loggerKit.xcframework loggerKit.podspec dummy.swift
-          git commit -m "Release $TAG_NAME for CocoaPods"
-          git tag "$TAG_NAME"
+
+          git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
+          git tag "$SEMANTIC_VERSION"
 
           git push origin HEAD:${GITHUB_REF#refs/heads/}
-          git push origin "$TAG_NAME"
+          git push origin "$SEMANTIC_VERSION"
