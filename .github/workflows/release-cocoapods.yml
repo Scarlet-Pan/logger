@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Semantic version (e.g., 1.1.0-alpha06)'
+        description: 'Semantic version (e.g., 1.0.0)'
         required: true
         type: string
 
@@ -38,10 +38,11 @@ jobs:
         run: |
           if [ ! -d "loggerKit.xcframework" ]; then
             echo "❌ loggerKit.xcframework not found in project root!"
+            echo "Contents of current directory:"
             ls -la
             exit 1
           fi
-          echo "✅ Found loggerKit.xcframework"
+          echo "✅ Found loggerKit.xcframework in project root"
 
       - name: Ensure loggerKit.podspec is in root
         run: |
@@ -50,26 +51,30 @@ jobs:
               cp logger/loggerKit.podspec ./loggerKit.podspec
               echo "✅ Copied loggerKit.podspec to root"
             else
-              echo "❌ loggerKit.podspec not found in logger/ or root!"
+              echo "❌ loggerKit.podspec not found in root or logger/ directory!"
               exit 1
             fi
           else
             echo "✅ loggerKit.podspec already in root"
           fi
 
+      - name: Create dummy.swift (required by CocoaPods)
+        run: touch dummy.swift
+
       - name: Verify framework header contains Logger class
         run: |
           HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
           if [ ! -f "$HEADER" ]; then
-            echo "❌ Header file missing at $HEADER"
+            echo "❌ Header file not found at $HEADER"
             exit 1
           fi
           if ! grep -q "@interface Logger" "$HEADER"; then
-            echo "❌ Logger class not exported in header!"
+            echo "❌ Logger class not declared in header file!"
+            echo "Header preview:"
             head -n 20 "$HEADER"
             exit 1
           fi
-          echo "✅ Logger class correctly exported"
+          echo "✅ Header contains @interface Logger — API is exported correctly"
 
       - name: Commit artifacts and create Git tag
         env:
@@ -78,7 +83,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add loggerKit.xcframework loggerKit.podspec
+          git add loggerKit.xcframework loggerKit.podspec dummy.swift
 
           git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
           git tag "$SEMANTIC_VERSION"
