@@ -46,24 +46,9 @@ kotlin {
         }
     }
 
-    iosX64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = false
-        }
-    }
-    iosArm64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = false
-        }
-    }
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
-            isStatic = false
-        }
-    }
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
 
     js(IR) {
         browser {
@@ -73,6 +58,15 @@ kotlin {
         }
         nodejs()
         binaries.executable()
+    }
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget> {
+        binaries {
+            framework {
+                baseName = xcfName
+                isStatic = false
+            }
+        }
     }
 
     sourceSets {
@@ -198,25 +192,42 @@ tasks.register<Exec>("buildXCFramework") {
     dependsOn("generatePodspec")
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
-    val output = layout.projectDirectory.file("${xcfName}.xcframework").asFile
-    if (output.exists()) output.deleteRecursively()
-
-    val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
-    val simFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
-
-    if (!deviceFramework.exists()) throw RuntimeException("Device framework not found: ${deviceFramework.absolutePath}")
-    if (!simFramework.exists()) throw RuntimeException("Simulator framework not found: ${simFramework.absolutePath}")
+    val rootDir = project.rootDir
+    val output = File(rootDir, "${xcfName}.xcframework")
 
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
-        "-framework", deviceFramework.absolutePath,
-        "-framework", simFramework.absolutePath
+        "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath
     )
 
     dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
 
     doLast {
-        println("✅ XCFramework built at: ${output.absolutePath}")
+        val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
+        val simFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
+
+        if (!deviceFramework.exists()) throw RuntimeException("Device framework missing!")
+        if (!simFramework.exists()) throw RuntimeException("Simulator framework missing!")
+
+        // Generate podspec in root dir
+        File(rootDir, "${xcfName}.podspec").writeText("""
+            Pod::Spec.new do |s|
+              s.name         = '$xcfName'
+              s.version      = 'logger/${project.version}'
+              s.summary      = 'Kotlin Multiplatform logging library for iOS'
+              s.homepage     = 'https://github.com/Scarlet-Pan/logger'
+              s.license      = { :type => 'MIT', :file => 'LICENSE' }
+              s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
+              s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => 'logger/${project.version}' }
+              s.source_files = 'dummy.swift'
+              s.vendored_frameworks = '$xcfName.xcframework'
+              s.ios.deployment_target = '12.0'
+              s.swift_version = '5.0'
+            end
+        """.trimIndent())
+
+        println("✅ Success: $xcfName.xcframework and .podspec ready in root directory")
     }
 }
