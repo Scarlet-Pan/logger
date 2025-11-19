@@ -9,11 +9,13 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha03"
+version = "1.1.0-alpha04"
 
 val xcfName = "loggerKit"
 
 kotlin {
+
+    applyDefaultHierarchyTemplate()
 
     jvm {
         compilations.configureEach {
