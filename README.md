@@ -1,5 +1,7 @@
 # Logger
 
+A **Kotlin Multiplatform (KMP)** logging library that lets you **write once, log everywhere** — with full support for **Android, iOS, JVM, and JavaScript** using a familiar Android-style API (`d()`, `i()`, `w()`, `e()`). No `expect/actual`, no platform-specific code, just shared Kotlin that works out of the box.
+
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm?label=Maven%20Central)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm) [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html) [![Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]() [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org) [![Test Status](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml) [![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
@@ -208,6 +210,8 @@ Copyright © 2025 Scarlet Pan
 <br><br>
 
 # Logger
+
+一个 **Kotlin 多平台（Kotlin Multiplatform, KMP）** 日志库，让你 **一次编写，处处打日志** —— 完整支持 **Android、iOS、JVM 和 JavaScript**，并提供熟悉的 Android 风格 API（`d()`、`i()`、`w()`、`e()`）。无需 `expect/actual`，无需平台专属代码，只需一份共享 Kotlin，开箱即用。
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm?label=Maven%20Central)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm) [![Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html) [![支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]() [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org) [![测试状态](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml) [![许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
