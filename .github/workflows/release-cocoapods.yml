@@ -58,9 +58,6 @@ jobs:
             echo "✅ loggerKit.podspec already in root"
           fi
 
-      - name: Create dummy.swift (required by CocoaPods)
-        run: touch dummy.swift
-
       - name: Verify framework header contains Logger class
         run: |
           HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
@@ -83,7 +80,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add loggerKit.xcframework loggerKit.podspec dummy.swift
+          git add loggerKit.xcframework loggerKit.podspec
 
           git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
           git tag "$SEMANTIC_VERSION"
