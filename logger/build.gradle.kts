@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha02"
+version = "1.1.0-alpha03"
 
 val xcfName = "loggerKit"
 
@@ -167,22 +167,46 @@ signing {
     sign(publishing.publications)
 }
 
+tasks.register<Copy>("generatePodspec") {
+    val semanticVersion = project.version.toString() // "1.0.0-alpha03"
+    val podspecVersion = "logger/$semanticVersion"   // "logger/1.0.0-alpha03"
+
+    val podspecContent = """
+        Pod::Spec.new do |s|
+          s.name         = '$xcfName'
+          s.version      = '$podspecVersion'
+          s.summary      = 'Kotlin Multiplatform logging library for iOS'
+          s.homepage     = 'https://github.com/Scarlet-Pan/logger'
+          s.license      = { :type => 'MIT', :file => '../LICENSE' }
+          s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
+          s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$podspecVersion' }
+          s.source_files = 'dummy.swift'
+          s.vendored_frameworks = '$xcfName.xcframework'
+          s.ios.deployment_target = '12.0'
+          s.swift_version = '5.0'
+        end
+    """.trimIndent()
+
+    outputs.file(layout.projectDirectory.file("$xcfName.podspec"))
+    doLast {
+        layout.projectDirectory.file("$xcfName.podspec").asFile.writeText(podspecContent)
+        println("✅ Generated $xcfName.podspec with version: $podspecVersion")
+    }
+}
+
 tasks.register<Exec>("buildXCFramework") {
     dependsOn("generatePodspec")
-    val outputDir = project.projectDir
-    val frameworkOutput = File(outputDir, "$xcfName.xcframework")
+    onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
-    doFirst {
-        if (frameworkOutput.exists()) frameworkOutput.deleteRecursively()
-    }
+    val output = layout.projectDirectory.file("$xcfName.xcframework").asFile
+    if (output.exists()) output.deleteRecursively()
 
     commandLine = listOf(
-        "xcodebuild",
-        "-create-xcframework",
-        "-output", frameworkOutput.absolutePath,
-        "-framework", project.file("build/bin/iosArm64/releaseFramework/$xcfName.framework").absolutePath,
-        "-framework", project.file("build/bin/iosSimulatorArm64/releaseFramework/$xcfName.framework").absolutePath,
-        "-framework", project.file("build/bin/iosX64/releaseFramework/$xcfName.framework").absolutePath
+        "xcodebuild", "-create-xcframework",
+        "-output", output.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/$xcfName.framework").get().asFile.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/$xcfName.framework").get().asFile.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosX64/releaseFramework/$xcfName.framework").get().asFile.absolutePath
     )
 
     dependsOn(
@@ -192,6 +216,6 @@ tasks.register<Exec>("buildXCFramework") {
     )
 
     doLast {
-        println("✅ .xcframework built at: ${frameworkOutput.absolutePath}")
+        println("✅ Built $xcfName.xcframework at ${output.absolutePath}")
     }
 }
