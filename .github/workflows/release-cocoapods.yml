@@ -73,17 +73,11 @@ jobs:
           fi
           echo "✅ Header contains @interface Logger — API is exported correctly"
 
-      - name: Commit artifacts and create Git tag
-        env:
-          SEMANTIC_VERSION: ${{ github.event.inputs.version }}
+      - name: Verify xcframework includes all necessary architectures
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          git add loggerKit.xcframework loggerKit.podspec
-
-          git commit -m "Release $SEMANTIC_VERSION for CocoaPods"
-          git tag "$SEMANTIC_VERSION"
-
-          git push origin HEAD:${GITHUB_REF#refs/heads/}
-          git push origin "$SEMANTIC_VERSION"
+          # Check for ios-arm64 (device)
+          if [ ! -d "loggerKit.xcframework/ios-arm64" ]; then
+            echo "❌ Missing ios-arm64 architecture!"
+            exit 1
+          fi
+          # Check for ios-x86_64-simulator and ios-arm6
