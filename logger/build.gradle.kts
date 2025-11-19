@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha06"
+version = "1.1.0-alpha07"
 
 val xcfName = "loggerKit"
 
