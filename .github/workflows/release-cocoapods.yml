@@ -31,6 +31,31 @@ jobs:
       - name: Build XCFramework for :logger module
         run: ./gradlew :logger:buildXCFramework
 
+      - name: Verify XCFramework content
+        run: |
+          FRAMEWORK_PATH="loggerKit.xcframework/ios-arm64/loggerKit.framework/loggerKit"
+          
+          if [ ! -f "$FRAMEWORK_PATH" ]; then
+            echo "❌ Framework binary not found at $FRAMEWORK_PATH"
+            exit 1
+          fi
+
+          SIZE=$(stat -f%z "$FRAMEWORK_PATH")
+          echo "📦 Binary size: $SIZE bytes"
+
+          if [ "$SIZE" -lt 500000 ]; then
+            echo "❌ Binary too small (<500KB). Likely missing Kotlin code!"
+            exit 1
+          fi
+
+          echo "🔍 Searching for Logger symbols..."
+          if nm -gU "$FRAMEWORK_PATH" | grep -q "Logger\|logger"; then
+            echo "✅ Found Logger-related symbols. Looks good!"
+          else
+            echo "⚠️ WARNING: No 'Logger' symbol found in binary. May be tree-shaken or not linked."
+            # exit 1
+          fi
+
       - name: Create dummy.swift
         run: touch dummy.swift
 
