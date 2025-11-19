@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha01"
+version = "1.1.0-alpha02"
 
 val xcfName = "loggerKit"
 
@@ -49,19 +49,19 @@ kotlin {
     iosX64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
+            isStatic = false
         }
     }
     iosArm64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
+            isStatic = false
         }
     }
     iosSimulatorArm64 {
         binaries.framework {
             baseName = xcfName
-            isStatic = true
+            isStatic = false
         }
     }
 
@@ -168,16 +168,14 @@ signing {
 }
 
 tasks.register<Exec>("buildXCFramework") {
-    val outputDir = layout.buildDirectory.dir("xcframework").get().asFile
+    dependsOn("generatePodspec")
+    val outputDir = project.projectDir
     val frameworkOutput = File(outputDir, "$xcfName.xcframework")
 
-    // 清理旧产物
     doFirst {
-        if (outputDir.exists()) outputDir.deleteRecursively()
-        outputDir.mkdirs()
+        if (frameworkOutput.exists()) frameworkOutput.deleteRecursively()
     }
 
-    // 构建命令
     commandLine = listOf(
         "xcodebuild",
         "-create-xcframework",
@@ -187,7 +185,6 @@ tasks.register<Exec>("buildXCFramework") {
         "-framework", project.file("build/bin/iosX64/releaseFramework/$xcfName.framework").absolutePath
     )
 
-    // 依赖各个平台的 release framework 构建任务
     dependsOn(
         "linkReleaseFrameworkIosArm64",
         "linkReleaseFrameworkIosSimulatorArm64",
@@ -196,6 +193,5 @@ tasks.register<Exec>("buildXCFramework") {
 
     doLast {
         println("✅ .xcframework built at: ${frameworkOutput.absolutePath}")
-        println("📦 You can now drag it into Xcode or distribute it!")
     }
 }
