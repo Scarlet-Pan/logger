@@ -58,6 +58,30 @@ jobs:
             echo "✅ loggerKit.podspec already in root"
           fi
 
+      - name: Verify Info.plist exists in xcframework
+        run: |
+          if [ ! -f "loggerKit.xcframework/Info.plist" ]; then
+            echo "❌ Info.plist missing in xcframework root!"
+            exit 1
+          fi
+          echo "✅ Info.plist present"
+
+      - name: Verify xcframework includes required architectures
+        run: |
+          if [ ! -d "loggerKit.xcframework/ios-arm64" ]; then
+            echo "❌ Missing ios-arm64 (device) architecture!"
+            exit 1
+          fi
+
+          if [ ! -d "loggerKit.xcframework/ios-arm64_x86_64-simulator" ]; then
+            echo "❌ Missing ios-arm64_x86_64-simulator (universal simulator) architecture!"
+            echo "Available slices:"
+            ls -la loggerKit.xcframework/
+            exit 1
+          fi
+
+          echo "✅ xcframework contains: ios-arm64 and ios-arm64_x86_64-simulator"
+
       - name: Verify framework header contains Logger class
         run: |
           HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
@@ -73,11 +97,24 @@ jobs:
           fi
           echo "✅ Header contains @interface Logger — API is exported correctly"
 
-      - name: Verify xcframework includes all necessary architectures
+      - name: Check podspec version matches input
         run: |
-          # Check for ios-arm64 (device)
-          if [ ! -d "loggerKit.xcframework/ios-arm64" ]; then
-            echo "❌ Missing ios-arm64 architecture!"
+          INPUT_VERSION="${{ github.event.inputs.version }}"
+          PODSPEC_VERSION=$(grep -E "^  s.version\s*=" loggerKit.podspec | sed -E "s/.*=\s*['\"]([^'\"]+)['\"].*/\1/")
+          if [ "$PODSPEC_VERSION" != "$INPUT_VERSION" ]; then
+            echo "❌ Version mismatch! Input: $INPUT_VERSION, Podspec: $PODSPEC_VERSION"
             exit 1
           fi
-          # Check for ios-x86_64-simulator and ios-arm6
+          echo "✅ Podspec version matches input: $INPUT_VERSION"
+
+      - name: Create Git tag and push
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add loggerKit.xcframework loggerKit.podspec
+          git commit -m "Release loggerKit ${{ github.event.inputs.version }}"
+          git tag -a "${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
+          git push origin "${{ github.event.inputs.version }}"
+
+      - name: Notify success
+        run: echo "🎉 Successfully released loggerKit ${{ github.event.inputs.version }} for CocoaPods!"
