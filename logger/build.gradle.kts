@@ -167,44 +167,30 @@ tasks.register<Exec>("buildXCFramework") {
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
     val rootDir = project.rootDir
+    val xcfName = "loggerKit"
     val output = File(rootDir, "${xcfName}.xcframework")
     val version = project.version.toString()
+    val tempSimFramework = File(rootDir, "build/tmp/xcframework/${xcfName}_simulator.framework")
 
     dependsOn(
         "linkReleaseFrameworkIosArm64",
         "linkReleaseFrameworkIosX64",
-        "linkReleaseFrameworkIosSimulatorArm64"
+        "linkReleaseFrameworkIosSimulatorArm64",
+        "mergeSimulatorFrameworks" // 新增一个合并任务
     )
 
     doFirst {
         if (output.exists()) {
+            println("🗑️ Deleting existing $output")
             output.deleteRecursively()
         }
-    }
-
-    val tempDir = File(rootDir, "build/tmp/xcframework")
-    tempDir.mkdirs()
-
-    val intelSimFramework = layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile
-    val appleSiliconSimFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
-    val universalSimFramework = File(tempDir, "${xcfName}_simulator.framework")
-
-    appleSiliconSimFramework.copyRecursively(universalSimFramework)
-
-    exec {
-        commandLine = listOf(
-            "lipo", "-create",
-            File(intelSimFramework, xcfName).absolutePath,
-            File(appleSiliconSimFramework, xcfName).absolutePath,
-            "-output", File(universalSimFramework, xcfName).absolutePath
-        )
     }
 
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
         "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
-        "-framework", universalSimFramework.absolutePath
+        "-framework", tempSimFramework.absolutePath
     )
 
     doLast {
@@ -227,4 +213,26 @@ tasks.register<Exec>("buildXCFramework") {
 
         println("✅ Success: $xcfName.xcframework and $xcfName.podspec generated (version: $version)")
     }
+}
+
+tasks.register<Exec>("mergeSimulatorFrameworks") {
+    onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
+
+    val rootDir = project.rootDir
+    val xcfName = "loggerKit"
+    val tempDir = File(rootDir, "build/tmp/xcframework")
+    val universalSimFramework = File(tempDir, "${xcfName}_simulator.framework")
+
+    doFirst {
+        tempDir.mkdirs()
+        val appleSiliconFramework = layout.buildDirectory.dir("bin/iosSimulatorArm64/releaseFramework").get().asFile.resolve("$xcfName.framework")
+        appleSiliconFramework.copyRecursively(universalSimFramework, overwrite = true)
+    }
+
+    commandLine = listOf(
+        "lipo", "-create",
+        layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
+        layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
+        "-output", File(universalSimFramework, xcfName).absolutePath
+    )
 }
