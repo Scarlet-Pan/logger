@@ -111,6 +111,12 @@ kotlin {
             }
         }
 
+        iosTest {
+            dependencies {
+
+            }
+        }
+
         jsTest {
             dependencies {
                 implementation(libs.kotlin.test)
