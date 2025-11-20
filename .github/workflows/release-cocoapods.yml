@@ -1,0 +1,49 @@
+name: Release for CocoaPods
+
+on:
+  workflow_dispatch:
+
+jobs:
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Grant execute permission for Gradle
+        run: chmod +x ./gradlew
+
+      - name: Extract version from :logger module
+        id: extract_version
+        run: |
+          VERSION=$(./gradlew :logger:properties --console=plain -q | grep "^version:" | cut -d' ' -f2-)
+          if [ -z "$VERSION" ] || [ "$VERSION" = "unspecified" ]; then
+            echo "❌ Failed to extract version from :logger module"
+            echo "Output of ':logger:properties' (first 30 lines):"
+            ./gradlew :logger:properties --console=plain -q | head -n 30
+            exit 1
+          fi
+          echo "Logger version: $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Clean previous builds
+        run: ./gradlew clean
+
+      - name: Build XCFramework for :logger module
+        run: ./gradlew :logger:buildXCFramework
+
+      - name: Verify KmpLogger.xcframework exists in root
+        run: |
+          if [ ! -d "KmpLogger.xcframework" ]; then
+            echo "❌ KmpLogger.xcframework not found in project root!"
+            
