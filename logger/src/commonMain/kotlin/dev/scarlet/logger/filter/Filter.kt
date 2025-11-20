@@ -33,8 +33,11 @@ private object DefaultFilter : Filter { // TODO: expect
     }
 }
 
-@JvmName("combine")
-fun Filter.plus(other: Filter): Filter = { this.filter() && other.filter() } as Filter
+@JvmName("any")
+operator fun Filter.plus(other: Filter): Filter = { this.filter() || other.filter() } as Filter
+
+@JvmName("both")
+operator fun Filter.minus(other: Filter): Filter = { this.filter() && other.filter() } as Filter
 
 @JvmName("of")
 fun Logger.withFilter(filter: Filter): Logger = FilterLogger.of(this, filter)
