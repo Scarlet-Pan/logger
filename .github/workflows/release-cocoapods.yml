@@ -46,4 +46,34 @@ jobs:
         run: |
           if [ ! -d "KmpLogger.xcframework" ]; then
             echo "❌ KmpLogger.xcframework not found in project root!"
-            
+            echo "Current directory contents:"
+            ls -la
+            exit 1
+          fi
+          echo "✅ KmpLogger.xcframework found"
+
+      - name: Commit and push XCFramework & podspec
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          git add KmpLogger.xcframework KmpLogger.podspec
+          git commit -m "chore(release): CocoaPods artifacts for ${{ steps.extract_version.outputs.version }}"
+          
+          git push origin HEAD
+
+      - name: Create Git tag
+        run: |
+          git tag -a "${{ steps.extract_version.outputs.version }}" -m "Release ${{ steps.extract_version.outputs.version }}"
+          git push origin "${{ steps.extract_version.outputs.version }}"
+
+      - name: Publish to CocoaPods Trunk (optional)
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+        run: |
+          if [ -n "$COCOAPODS_TRUNK_TOKEN" ]; then
+            gem install cocoapods
+            pod trunk push KmpLogger.podspec --allow-warnings
+          else
+            echo "Skipping CocoaPods publish: COCOAPODS_TRUNK_TOKEN not set"
+          fi
