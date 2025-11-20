@@ -178,27 +178,37 @@ tasks.register<Exec>("buildXCFramework") {
 
     doFirst {
         if (output.exists()) {
-            println("🗑️ Deleting existing $output")
             output.deleteRecursively()
         }
+    }
+
+    val tempDir = File(rootDir, "build/tmp/xcframework")
+    tempDir.mkdirs()
+
+    val intelSimFramework = layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile
+    val appleSiliconSimFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
+    val universalSimFramework = File(tempDir, "${xcfName}_simulator.framework")
+
+    appleSiliconSimFramework.copyRecursively(universalSimFramework)
+
+    exec {
+        commandLine = listOf(
+            "lipo", "-create",
+            File(intelSimFramework, xcfName).absolutePath,
+            File(appleSiliconSimFramework, xcfName).absolutePath,
+            "-output", File(universalSimFramework, xcfName).absolutePath
+        )
     }
 
     commandLine = listOf(
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
         "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
-        "-framework", layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,             // ✅ 新增
-        "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath
+        "-framework", universalSimFramework.absolutePath
     )
 
     doLast {
-        val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
-        val intelSimFramework = layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile
-        val appleSiliconSimFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
-
-        if (!deviceFramework.exists()) throw RuntimeException("Device framework missing!")
-        if (!intelSimFramework.exists()) throw RuntimeException("Intel simulator framework missing!")
-        if (!appleSiliconSimFramework.exists()) throw RuntimeException("Apple Silicon simulator framework missing!")
+        if (!output.exists()) throw RuntimeException("xcframework not created!")
 
         File(rootDir, "${xcfName}.podspec").writeText("""
             Pod::Spec.new do |s|
