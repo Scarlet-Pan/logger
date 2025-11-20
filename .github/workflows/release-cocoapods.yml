@@ -17,7 +17,7 @@ jobs:
       - name: Extract version from build.gradle.kts
         id: extract_version
         run: |
-          VERSION=$(grep -oP 'version\s*=\s*["'\'']\K[^"'\'']+(?=["'\''])' build.gradle.kts)
+          VERSION=$(sed -n "s/^[[:space:]]*version[[:space:]]*=[[:space:]]*[\"']\([^\"']*\)[\"'][[:space:]]*$/\1/p" build.gradle.kts)
           if [ -z "$VERSION" ]; then
             echo "❌ Failed to extract version from build.gradle.kts"
             exit 1
