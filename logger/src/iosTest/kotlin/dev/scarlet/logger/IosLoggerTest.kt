@@ -1,5 +1,6 @@
 package dev.scarlet.logger
 
+import dev.scarlet.logger.Logger.Level
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -35,43 +36,43 @@ class IosLoggerTest {
     @Test
     fun logs_debug_message() {
         Logger.d(TAG, "Debug message")
-        assertLastLog(LogLevel.DEBUG, TAG, "Debug message")
+        assertLastLog(Level.DEBUG, TAG, "Debug message")
     }
 
     @Test
     fun logs_info_message() {
         Logger.i(TAG, "Info message")
-        assertLastLog(LogLevel.INFO, TAG, "Info message")
+        assertLastLog(Level.INFO, TAG, "Info message")
     }
 
     @Test
     fun logs_warn_message() {
         Logger.w(TAG, "Warn message")
-        assertLastLog(LogLevel.WARN, TAG, "Warn message")
+        assertLastLog(Level.WARN, TAG, "Warn message")
     }
 
     @Test
     fun logs_error_message() {
         Logger.e(TAG, "Error message")
-        assertLastLog(LogLevel.ERROR, TAG, "Error message")
+        assertLastLog(Level.ERROR, TAG, "Error message")
     }
 
     @Test
     fun handles_empty_string_message() {
         Logger.i(TAG, "")
-        assertLastLog(LogLevel.INFO, TAG, "")
+        assertLastLog(Level.INFO, TAG, "")
     }
 
     @Test
     fun handles_whitespace_only_message() {
         Logger.w(TAG, "   ")
-        assertLastLog(LogLevel.WARN, TAG, "   ")
+        assertLastLog(Level.WARN, TAG, "   ")
     }
 
     @Test
     fun uses_custom_tag_when_provided() {
         Logger.d(TAG_CUSTOM, "Message with custom tag")
-        assertLastLog(LogLevel.DEBUG, TAG_CUSTOM, "Message with custom tag")
+        assertLastLog(Level.DEBUG, TAG_CUSTOM, "Message with custom tag")
     }
 
     @Test
@@ -81,7 +82,7 @@ class IosLoggerTest {
 
         assertEquals(1, testLogger.entries.size)
         with(testLogger.entries[0]) {
-            assertEquals(LogLevel.ERROR, level)
+            assertEquals(Level.ERROR, level)
             assertEquals(TAG, tag)
             assertEquals("Error with exception", message)
             assertNotNull(throwable)
@@ -100,7 +101,7 @@ class IosLoggerTest {
         assertEquals("Second", testLogger.entries[1].message)
     }
 
-    private fun assertLastLog(level: LogLevel, tag: String, message: String?) {
+    private fun assertLastLog(level: Level, tag: String, message: String?) {
         assertEquals(1, testLogger.entries.size, "Expected exactly one log entry")
         with(testLogger.entries[0]) {
             assertEquals(level, this.level, "Log level mismatch")
@@ -110,39 +111,18 @@ class IosLoggerTest {
     }
 }
 
-enum class LogLevel {
-    DEBUG, INFO, WARN, ERROR
-}
-
-data class LogEntry(
-    val level: LogLevel,
+private data class LogEntry(
+    val level: Level,
     val tag: String,
     val message: String?,
     val throwable: Throwable?
 )
 
-class TestLogger : Logger {
+private class TestLogger : AbsLogger() {
 
     val entries = mutableListOf<LogEntry>()
 
-    override fun d(tag: String, msg: String, tr: Throwable?) {
-        entries.add(LogEntry(LogLevel.DEBUG, tag, msg, tr))
-    }
-
-    override fun i(tag: String, msg: String, tr: Throwable?) {
-        entries.add(LogEntry(LogLevel.INFO, tag, msg, tr))
-    }
-
-    override fun w(tag: String, msg: String, tr: Throwable?) {
-        entries.add(LogEntry(LogLevel.WARN, tag, msg, tr))
-    }
-
-    // Optional overload for warn without message (if your Logger interface has it)
-    override fun w(tag: String, tr: Throwable) {
-        entries.add(LogEntry(LogLevel.WARN, tag, "", tr))
-    }
-
-    override fun e(tag: String, msg: String, tr: Throwable?) {
-        entries.add(LogEntry(LogLevel.ERROR, tag, msg, tr))
+    override fun log(level: Level, tag: String, msg: String, tr: Throwable?) {
+        entries.add(LogEntry(level, tag, msg, tr))
     }
 }
