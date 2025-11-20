@@ -9,9 +9,9 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha10"
+version = "1.1.0-alpha11"
 
-val xcfName = "loggerKit"
+val xcfName = "KmpLogger"
 
 kotlin {
 
@@ -167,7 +167,7 @@ tasks.register<Exec>("buildXCFramework") {
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
     val rootDir = project.rootDir
-    val xcfName = "loggerKit"
+    val xcfName = xcfName
     val output = File(rootDir, "${xcfName}.xcframework")
     val version = project.version.toString()
 
@@ -217,7 +217,7 @@ tasks.register<Exec>("buildXCFramework") {
 tasks.register<Exec>("mergeSimulatorFrameworks") {
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
-    val xcfName = "loggerKit"
+    val xcfName = xcfName
     val universalDir = layout.buildDirectory.dir("tmp/simulator-universal").get().asFile
     val universalFramework = File(universalDir, "${xcfName}.framework")
 

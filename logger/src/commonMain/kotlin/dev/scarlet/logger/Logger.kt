@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Companion.SYSTEM
@@ -6,8 +8,10 @@ import dev.scarlet.logger.Logger.Level.DEBUG
 import dev.scarlet.logger.Logger.Level.ERROR
 import dev.scarlet.logger.Logger.Level.INFO
 import dev.scarlet.logger.Logger.Level.WARN
+import kotlin.experimental.ExperimentalObjCName
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
+import kotlin.native.ObjCName
 
 @Suppress("ObjectPropertyName")
 private var _default: Logger = PlatformLogger
@@ -41,6 +45,7 @@ interface Logger {
      * Logger.e("Database", "Failed to open it.", exception)
      * ```
      */
+    @ObjCName("Logger", exact = true)
     companion object : Logger by _default {
 
         private const val TAG = "Logger"
