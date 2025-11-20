@@ -34,33 +34,33 @@ jobs:
       - name: Build XCFramework for :logger module
         run: ./gradlew :logger:buildXCFramework
 
-      - name: Verify loggerKit.xcframework exists in root
+      - name: Verify KmpLogger.xcframework exists in root
         run: |
-          if [ ! -d "loggerKit.xcframework" ]; then
-            echo "❌ loggerKit.xcframework not found in project root!"
+          if [ ! -d "KmpLogger.xcframework" ]; then
+            echo "❌ KmpLogger.xcframework not found in project root!"
             echo "Contents of current directory:"
             ls -la
             exit 1
           fi
-          echo "✅ Found loggerKit.xcframework in project root"
+          echo "✅ Found KmpLogger.xcframework in project root"
 
-      - name: Ensure loggerKit.podspec is in root
+      - name: Ensure KmpLogger.podspec is in root
         run: |
-          if [ ! -f "loggerKit.podspec" ]; then
-            if [ -f "logger/loggerKit.podspec" ]; then
-              cp logger/loggerKit.podspec ./loggerKit.podspec
-              echo "✅ Copied loggerKit.podspec to root"
+          if [ ! -f "KmpLogger.podspec" ]; then
+            if [ -f "logger/KmpLogger.podspec" ]; then
+              cp logger/KmpLogger.podspec ./KmpLogger.podspec
+              echo "✅ Copied KmpLogger.podspec to root"
             else
-              echo "❌ loggerKit.podspec not found in root or logger/ directory!"
+              echo "❌ KmpLogger.podspec not found in root or logger/ directory!"
               exit 1
             fi
           else
-            echo "✅ loggerKit.podspec already in root"
+            echo "✅ KmpLogger.podspec already in root"
           fi
 
       - name: Verify Info.plist exists in xcframework
         run: |
-          if [ ! -f "loggerKit.xcframework/Info.plist" ]; then
+          if [ ! -f "KmpLogger.xcframework/Info.plist" ]; then
             echo "❌ Info.plist missing in xcframework root!"
             exit 1
           fi
@@ -68,15 +68,15 @@ jobs:
 
       - name: Verify xcframework includes required architectures
         run: |
-          if [ ! -d "loggerKit.xcframework/ios-arm64" ]; then
+          if [ ! -d "KmpLogger.xcframework/ios-arm64" ]; then
             echo "❌ Missing ios-arm64 (device) architecture!"
             exit 1
           fi
 
-          if [ ! -d "loggerKit.xcframework/ios-arm64_x86_64-simulator" ]; then
+          if [ ! -d "KmpLogger.xcframework/ios-arm64_x86_64-simulator" ]; then
             echo "❌ Missing ios-arm64_x86_64-simulator (universal simulator) architecture!"
             echo "Available slices:"
-            ls -la loggerKit.xcframework/
+            ls -la KmpLogger.xcframework/
             exit 1
           fi
 
@@ -84,7 +84,7 @@ jobs:
 
       - name: Verify framework header contains Logger class
         run: |
-          HEADER="loggerKit.xcframework/ios-arm64/loggerKit.framework/Headers/loggerKit.h"
+          HEADER="KmpLogger.xcframework/ios-arm64/KmpLogger.framework/Headers/KmpLogger.h"
           if [ ! -f "$HEADER" ]; then
             echo "❌ Header file not found at $HEADER"
             exit 1
@@ -102,15 +102,15 @@ jobs:
           INPUT_VERSION="${{ github.event.inputs.version }}"
           # Use Ruby to safely extract version from podspec (handles spaces, quotes, etc.)
           PODSPEC_VERSION=$(ruby -e "
-            content = File.read('loggerKit.podspec')
+            content = File.read('KmpLogger.podspec')
             match = content.match(/\\bs\\.version\\s*=\\s*['\"]([^'\"]+)['\"]/)
             puts match ? match[1] : 'EXTRACTION_FAILED'
           ")
 
           if [ "$PODSPEC_VERSION" = "EXTRACTION_FAILED" ]; then
-            echo "❌ Failed to extract version from loggerKit.podspec"
+            echo "❌ Failed to extract version from KmpLogger.podspec"
             echo "Podspec content:"
-            cat loggerKit.podspec
+            cat KmpLogger.podspec
             exit 1
           fi
 
@@ -126,10 +126,10 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git add loggerKit.xcframework loggerKit.podspec
-          git commit -m "Release loggerKit ${{ github.event.inputs.version }}"
+          git add KmpLogger.xcframework KmpLogger.podspec
+          git commit -m "Release KmpLogger ${{ github.event.inputs.version }}"
           git tag -a "${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
           git push origin HEAD --follow-tags
 
       - name: Notify success
-        run: echo "🎉 Successfully released loggerKit ${{ github.event.inputs.version }} for CocoaPods!"
+        run: echo "🎉 Successfully released KmpLogger ${{ github.event.inputs.version }} for CocoaPods!"
