@@ -100,9 +100,24 @@ jobs:
       - name: Check podspec version matches input
         run: |
           INPUT_VERSION="${{ github.event.inputs.version }}"
-          PODSPEC_VERSION=$(grep -E "^  s.version\s*=" loggerKit.podspec | sed -E "s/.*=\s*['\"]([^'\"]+)['\"].*/\1/")
+          # Use Ruby to safely extract version from podspec (handles spaces, quotes, etc.)
+          PODSPEC_VERSION=$(ruby -e "
+            content = File.read('loggerKit.podspec')
+            match = content.match(/\\bs\\.version\\s*=\\s*['\"]([^'\"]+)['\"]/)
+            puts match ? match[1] : 'EXTRACTION_FAILED'
+          ")
+
+          if [ "$PODSPEC_VERSION" = "EXTRACTION_FAILED" ]; then
+            echo "❌ Failed to extract version from loggerKit.podspec"
+            echo "Podspec content:"
+            cat loggerKit.podspec
+            exit 1
+          fi
+
           if [ "$PODSPEC_VERSION" != "$INPUT_VERSION" ]; then
-            echo "❌ Version mismatch! Input: $INPUT_VERSION, Podspec: $PODSPEC_VERSION"
+            echo "❌ Version mismatch!"
+            echo "Input version:    $INPUT_VERSION"
+            echo "Podspec version:  $PODSPEC_VERSION"
             exit 1
           fi
           echo "✅ Podspec version matches input: $INPUT_VERSION"
@@ -114,7 +129,7 @@ jobs:
           git add loggerKit.xcframework loggerKit.podspec
           git commit -m "Release loggerKit ${{ github.event.inputs.version }}"
           git tag -a "${{ github.event.inputs.version }}" -m "Release ${{ github.event.inputs.version }}"
-          git push origin "${{ github.event.inputs.version }}"
+          git push origin HEAD --follow-tags
 
       - name: Notify success
         run: echo "🎉 Successfully released loggerKit ${{ github.event.inputs.version }} for CocoaPods!"
