@@ -170,8 +170,11 @@ tasks.register<Exec>("buildXCFramework") {
     val output = File(rootDir, "${xcfName}.xcframework")
     val version = project.version.toString()
 
-    // Ensure frameworks are built
-    dependsOn("linkReleaseFrameworkIosArm64", "linkReleaseFrameworkIosSimulatorArm64")
+    dependsOn(
+        "linkReleaseFrameworkIosArm64",
+        "linkReleaseFrameworkIosX64",
+        "linkReleaseFrameworkIosSimulatorArm64"
+    )
 
     doFirst {
         if (output.exists()) {
@@ -184,17 +187,19 @@ tasks.register<Exec>("buildXCFramework") {
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
         "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,             // ✅ 新增
         "-framework", layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath
     )
 
     doLast {
         val deviceFramework = layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile
-        val simFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
+        val intelSimFramework = layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework").get().asFile
+        val appleSiliconSimFramework = layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework").get().asFile
 
         if (!deviceFramework.exists()) throw RuntimeException("Device framework missing!")
-        if (!simFramework.exists()) throw RuntimeException("Simulator framework missing!")
+        if (!intelSimFramework.exists()) throw RuntimeException("Intel simulator framework missing!")
+        if (!appleSiliconSimFramework.exists()) throw RuntimeException("Apple Silicon simulator framework missing!")
 
-        // ✅ Generate CORRECT .podspec with pure version
         File(rootDir, "${xcfName}.podspec").writeText("""
             Pod::Spec.new do |s|
               s.name         = '$xcfName'
