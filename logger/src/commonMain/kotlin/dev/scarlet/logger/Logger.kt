@@ -35,7 +35,6 @@ private var _default: Logger = PlatformLogger
  * @author Scarlet Pan
  * @version 1.0.0
  */
-@ObjCName("LoggerProtocol", exact = true)
 interface Logger {
 
     /**
@@ -46,7 +45,7 @@ interface Logger {
      * Logger.e("Database", "Failed to open it.", exception)
      * ```
      */
-    @ObjCName("Logger", exact = true)
+    @ObjCName("DefaultLogger", exact = true)
     companion object : Logger by _default {
 
         private const val TAG = "Logger"
