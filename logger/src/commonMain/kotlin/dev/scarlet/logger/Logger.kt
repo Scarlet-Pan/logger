@@ -1,12 +1,17 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Companion.SYSTEM
 import dev.scarlet.logger.Logger.Companion.default
+import dev.scarlet.logger.Logger.Level.DEBUG
+import dev.scarlet.logger.Logger.Level.ERROR
+import dev.scarlet.logger.Logger.Level.INFO
+import dev.scarlet.logger.Logger.Level.WARN
+import kotlin.experimental.ExperimentalObjCName
 import kotlin.jvm.JvmName
 import kotlin.jvm.JvmStatic
-
-@Suppress("ObjectPropertyName")
-private var _default: Logger = PlatformLogger
+import kotlin.native.ObjCName
 
 /**
  * A logging interface.
@@ -25,8 +30,9 @@ private var _default: Logger = PlatformLogger
  * All methods are thread-safe (as guaranteed by implementations) and can be called from any thread or coroutine.
  *
  * @author Scarlet Pan
- * @version 1.0.0
+ * @version 1.0.1
  */
+@ObjCName("Logging", exact = true)
 interface Logger {
 
     /**
@@ -37,7 +43,8 @@ interface Logger {
      * Logger.e("Database", "Failed to open it.", exception)
      * ```
      */
-    companion object : Logger by _default {
+    @ObjCName("Logger", exact = true)
+    companion object : AbsLogger() {
 
         private const val TAG = "Logger"
 
@@ -75,17 +82,20 @@ interface Logger {
          * @see SYSTEM
          */
         @JvmStatic
-        var default: Logger
-            get() = _default
+        var default: Logger = SYSTEM
             set(value) {
-                _default = value.also {
+                field = value.also {
                     it.i(TAG, "Default logger changed to $value.")
                 }
             }
+
+        override fun log(level: Level, tag: String, msg: String, tr: Throwable?) {
+            default.log(level, tag, msg, tr)
+        }
     }
 
     /**
-     * Logs a message at the DEBUG level.
+     * Logs a message at the [Level.DEBUG].
      *
      * Typically used for detailed diagnostic information during development.
      * Whether the message is output depends on the specific implementation.
@@ -97,7 +107,7 @@ interface Logger {
     fun d(tag: String, msg: String, tr: Throwable? = null)
 
     /**
-     * Logs a message at the INFO level.
+     * Logs a message at the [Level.INFO].
      *
      * Used for general operational status, key workflow steps, etc.
      *
@@ -108,7 +118,7 @@ interface Logger {
     fun i(tag: String, msg: String, tr: Throwable? = null)
 
     /**
-     * Logs a WARN-level message with only a throwable (no explicit message).
+     * Logs a [Level.WARN] message with only a throwable (no explicit message).
      *
      * Equivalent to calling `w(tag, "", tr)`. Useful when only an exception needs to be logged.
      *
@@ -118,7 +128,7 @@ interface Logger {
     fun w(tag: String, tr: Throwable) = w(tag, "", tr)
 
     /**
-     * Logs a message at the WARN level.
+     * Logs a message at the [Level.WARN].
      *
      * Indicates potential issues or unexpected states that do not prevent continued execution.
      *
@@ -129,7 +139,7 @@ interface Logger {
     fun w(tag: String, msg: String, tr: Throwable? = null)
 
     /**
-     * Logs a message at the ERROR level.
+     * Logs a message at the [Level.ERROR].
      *
      * Indicates serious failures or exceptions that may impact functionality.
      * It is strongly recommended to pass [tr] when catching exceptions to preserve full context.
@@ -139,4 +149,55 @@ interface Logger {
      * @param tr An optional throwable (recommended to provide).
      */
     fun e(tag: String, msg: String, tr: Throwable? = null)
+
+    /**
+     * Log severity levels.
+     *
+     * These levels indicate the importance and intended audience of a log message.
+     * They are ordered from least to most severe:
+     * [DEBUG] < [INFO] < [WARN] < [ERROR].
+     *
+     * Example usage:
+     * ```kotlin
+     * Logger.d("App", "Initializing database connection...") // DEBUG
+     * Logger.i("App", "Service started successfully.")       // INFO
+     * Logger.w("App", "Config file missing; using defaults.") // WARN
+     * Logger.e("App", "Failed to connect to database.")      // ERROR
+     * ```
+     *
+     * @author Scarlet Pan
+     * @since 1.0.0
+     */
+    enum class Level {
+
+        /**
+         * Detailed diagnostic information, typically useful only during development or troubleshooting.
+         *
+         * Use sparingly in production, as excessive debug logs can impact performance and readability.
+         */
+        DEBUG,
+
+        /**
+         * General operational messages that confirm expected behavior (e.g., service startup, state changes).
+         *
+         * Suitable for routine events that help trace application flow without overwhelming the log stream.
+         */
+        INFO,
+
+        /**
+         * Indicates an unexpected or unusual condition that might become a problem later,
+         * but the system is still functioning normally.
+         *
+         * Examples: missing optional configuration, fallback to default behavior, deprecated API usage.
+         */
+        WARN,
+
+        /**
+         * Represents a serious failure that prevents a feature or operation from completing successfully.
+         *
+         * Always investigate errors—they typically indicate bugs, misconfigurations, or external failures.
+         */
+        ERROR
+    }
+
 }
