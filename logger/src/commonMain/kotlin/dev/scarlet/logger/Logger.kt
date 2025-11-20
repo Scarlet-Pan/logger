@@ -35,6 +35,7 @@ private var _default: Logger = PlatformLogger
  * @author Scarlet Pan
  * @version 1.0.0
  */
+@ObjCName("LoggerProtocol", exact = true)
 interface Logger {
 
     /**

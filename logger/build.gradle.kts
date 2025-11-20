@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0-alpha11"
+version = "1.1.0-alpha12"
 
 val xcfName = "KmpLogger"
 

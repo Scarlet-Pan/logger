@@ -48,7 +48,6 @@ import KmpLogger
 /// Logger.w("Cache", "Missed entry; fetching from network")
 /// Logger.e("Database", "Failed to open", error: dbError)
 /// ```
-public typealias Logger = Logger_ // Hide Kotlin-generated suffix
 
 extension Logger {
     /// The global default logger instance used by all static logging methods.
