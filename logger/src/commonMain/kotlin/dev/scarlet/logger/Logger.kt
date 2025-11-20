@@ -46,7 +46,7 @@ interface Logger {
      * Logger.e("Database", "Failed to open it.", exception)
      * ```
      */
-    @ObjCName("DefaultLogger", exact = true)
+    @ObjCName("Logger", exact = true)
     companion object : Logger by _default {
 
         private const val TAG = "Logger"
