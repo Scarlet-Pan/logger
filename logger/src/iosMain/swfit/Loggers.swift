@@ -48,7 +48,6 @@ import KmpLogger
 /// Logger.w("Cache", "Missed entry; fetching from network")
 /// Logger.e("Database", "Failed to open", error: dbError)
 /// ```
-
 extension Logger {
     /// The global default logger instance used by all static logging methods.
     ///
@@ -62,9 +61,9 @@ extension Logger {
     /// This helps diagnose logger pipeline changes at runtime.
     ///
     /// The initial value is the platform-specific system logger (equivalent to `SYSTEM` in Kotlin).
-    public static var `default`: Logger {
-        get { Logger.shared.default }
-        set { Logger.shared.default = newValue }
+    public static var `default`: Logging {
+        get { Logger.shared.default_}
+        set { Logger.shared.default_ = newValue }
     }
 
     /// Logs a message at the **DEBUG** level.
@@ -78,7 +77,7 @@ extension Logger {
     ///   - message: The log message (must not be nil).
     ///   - error: An optional error; if provided, its description and stack trace (if available) should be included.
     public static func d(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.d(tag: tag, msg: message, tr: error as NSError?)
+        Logger.shared.d(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **INFO** level.
@@ -91,7 +90,7 @@ extension Logger {
     ///   - message: The log message.
     ///   - error: An optional error to attach.
     public static func i(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.i(tag: tag, msg: message, tr: error as NSError?)
+        Logger.shared.i(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **WARN** level.
@@ -104,7 +103,7 @@ extension Logger {
     ///   - message: The warning message. Defaults to an empty string if only an error is relevant.
     ///   - error: An optional error to attach.
     public static func w(_ tag: String, _ message: String = "", error: Error? = nil) {
-        Logger.shared.w(tag: tag, msg: message, tr: error as NSError?)
+        Logger.shared.w(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **ERROR** level.
@@ -117,6 +116,35 @@ extension Logger {
     ///   - message: A description of the error condition.
     ///   - error: An optional but highly recommended error object.
     public static func e(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.e(tag: tag, msg: message, tr: error as NSError?)
+        Logger.shared.e(tag: tag, msg: message, tr: error?.asException())
+    }
+}
+
+extension Error {
+
+    /// Converts this Swift `Error` into a `KotlinThrowable` using standard `NSError` fields.
+    ///
+    /// The resulting message has the format: `[domain] Code=code: localizedDescription`.
+    /// If an underlying error exists (via `NSUnderlyingErrorKey`), it is recursively converted
+    /// and set as the `cause`.
+    ///
+    /// - Note: No stack trace is included, as `NSError` does not capture one by default.
+    /// - Returns: A `KotlinThrowable` representing this error.
+    func asException() -> KotlinThrowable {
+        let nsError = self as NSError
+
+        let cause: KotlinThrowable? =
+            (nsError.userInfo[NSUnderlyingErrorKey] as? NSError)?.asException()
+
+        let message = [
+            "[\(nsError.domain)] Code=\(nsError.code)",
+            nsError.localizedDescription.isEmpty ? nil : nsError.localizedDescription
+        ]
+        .compactMap { $0 }
+        .joined(separator: ": ")
+
+        return cause != nil
+            ? KotlinThrowable(message: message, cause: cause)
+            : KotlinThrowable(message: message)
     }
 }
