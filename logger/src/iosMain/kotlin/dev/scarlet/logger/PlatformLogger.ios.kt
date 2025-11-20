@@ -4,7 +4,7 @@ import dev.scarlet.logger.Logger.Level
 import kotlin.experimental.ExperimentalNativeApi
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-internal actual object PlatformLogger : AbsLogger() {
+internal actual object PlatformLogger : AbsLogger(), Logger {
 
     actual override fun toString(): String = "iOSLogger"
 
