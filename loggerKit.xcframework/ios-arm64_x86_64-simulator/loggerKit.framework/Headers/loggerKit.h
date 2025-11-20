@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class Logger, LoggerKitKotlinThrowable, LoggerKitLoggerCompanion, LoggerKitKotlinEnumCompanion, LoggerKitKotlinEnum<E>, LoggerKitLoggerLevel, LoggerKitKotlinArray<T>;
+@class LoggerKitKotlinThrowable, LoggerKitLoggerCompanion, LoggerKitKotlinEnumCompanion, LoggerKitKotlinEnum<E>, LoggerKitLoggerLevel, LoggerKitKotlinArray<T>;
 
 @protocol LoggerKitLogger, LoggerKitKotlinComparable, LoggerKitKotlinIterator;
 
@@ -144,19 +144,7 @@ __attribute__((swift_name("KotlinBoolean")))
 + (instancetype)numberWithBool:(BOOL)value;
 @end
 
-__attribute__((objc_subclassing_restricted))
-@interface Logger : LoggerKitBase
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-+ (instancetype)logger __attribute__((swift_name("init()")));
-@property (class, readonly, getter=shared) Logger *shared __attribute__((swift_name("shared")));
-- (void)dTag:(NSString *)tag message:(NSString *)message throwable:(LoggerKitKotlinThrowable * _Nullable)throwable __attribute__((swift_name("d(tag:message:throwable:)")));
-- (void)eTag:(NSString *)tag message:(NSString *)message throwable:(LoggerKitKotlinThrowable * _Nullable)throwable __attribute__((swift_name("e(tag:message:throwable:)")));
-- (void)iTag:(NSString *)tag message:(NSString *)message throwable:(LoggerKitKotlinThrowable * _Nullable)throwable __attribute__((swift_name("i(tag:message:throwable:)")));
-- (void)wTag:(NSString *)tag message:(NSString *)message throwable:(LoggerKitKotlinThrowable * _Nullable)throwable __attribute__((swift_name("w(tag:message:throwable:)")));
-@end
-
-__attribute__((swift_name("Logger_")))
+__attribute__((swift_name("Logger")))
 @protocol LoggerKitLogger
 @required
 - (void)dTag:(NSString *)tag msg:(NSString *)msg tr:(LoggerKitKotlinThrowable * _Nullable)tr __attribute__((swift_name("d(tag:msg:tr:)")));
@@ -167,7 +155,7 @@ __attribute__((swift_name("Logger_")))
 @end
 
 __attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("Logger_Companion")))
+__attribute__((swift_name("LoggerCompanion")))
 @interface LoggerKitLoggerCompanion : LoggerKitBase <LoggerKitLogger>
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
@@ -211,7 +199,7 @@ __attribute__((swift_name("KotlinEnum")))
 @end
 
 __attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("Logger_Level")))
+__attribute__((swift_name("LoggerLevel")))
 @interface LoggerKitLoggerLevel : LoggerKitKotlinEnum<LoggerKitLoggerLevel *>
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
