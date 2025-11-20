@@ -170,13 +170,12 @@ tasks.register<Exec>("buildXCFramework") {
     val xcfName = "loggerKit"
     val output = File(rootDir, "${xcfName}.xcframework")
     val version = project.version.toString()
-    val tempSimFramework = File(rootDir, "build/tmp/xcframework/${xcfName}_simulator.framework")
 
     dependsOn(
         "linkReleaseFrameworkIosArm64",
         "linkReleaseFrameworkIosX64",
         "linkReleaseFrameworkIosSimulatorArm64",
-        "mergeSimulatorFrameworks" // 新增一个合并任务
+        "mergeSimulatorFrameworks"
     )
 
     doFirst {
@@ -190,7 +189,7 @@ tasks.register<Exec>("buildXCFramework") {
         "xcodebuild", "-create-xcframework",
         "-output", output.absolutePath,
         "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
-        "-framework", tempSimFramework.absolutePath
+        "-framework", layout.buildDirectory.dir("tmp/simulator-universal").get().asFile.resolve("${xcfName}.framework").absolutePath
     )
 
     doLast {
@@ -218,21 +217,20 @@ tasks.register<Exec>("buildXCFramework") {
 tasks.register<Exec>("mergeSimulatorFrameworks") {
     onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
 
-    val rootDir = project.rootDir
     val xcfName = "loggerKit"
-    val tempDir = File(rootDir, "build/tmp/xcframework")
-    val universalSimFramework = File(tempDir, "${xcfName}_simulator.framework")
+    val universalDir = layout.buildDirectory.dir("tmp/simulator-universal").get().asFile
+    val universalFramework = File(universalDir, "${xcfName}.framework")
 
     doFirst {
-        tempDir.mkdirs()
-        val appleSiliconFramework = layout.buildDirectory.dir("bin/iosSimulatorArm64/releaseFramework").get().asFile.resolve("$xcfName.framework")
-        appleSiliconFramework.copyRecursively(universalSimFramework, overwrite = true)
+        universalDir.mkdirs()
+        val appleSiliconFramework = layout.buildDirectory.dir("bin/iosSimulatorArm64/releaseFramework").get().asFile.resolve("${xcfName}.framework")
+        appleSiliconFramework.copyRecursively(universalFramework, overwrite = true)
     }
 
     commandLine = listOf(
         "lipo", "-create",
         layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
         layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
-        "-output", File(universalSimFramework, xcfName).absolutePath
+        "-output", File(universalFramework, xcfName).absolutePath
     )
 }
