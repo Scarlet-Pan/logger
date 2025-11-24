@@ -5,3 +5,4 @@ package dev.scarlet.logger
 
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
+

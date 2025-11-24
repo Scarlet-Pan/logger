@@ -2,14 +2,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.multiplatform.android.library)
-    alias(libs.plugins.android.lint)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.maven.publish)
     signing
 }
 
 group = "io.github.scarlet-pan"
-version = "1.0.0"
+version = "1.0.1-SNAPSHOT"
 
 kotlin {
 
@@ -21,25 +20,11 @@ kotlin {
         }
     }
 
-    androidLibrary {
-        namespace = "dev.scarlet.logger"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-
-        withJava() // enable java compilation support
-        withAndroidTestOnJvmBuilder {
-
-        }.configure {
-
-        }
-        withAndroidTestOnDeviceBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-        compilations.configureEach {
-            compilerOptions.configure {
-                jvmTarget.set(JvmTarget.JVM_1_8)
+    androidTarget {
+        publishLibraryVariants("release")
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
             }
         }
     }
@@ -93,13 +78,13 @@ kotlin {
             }
         }
 
-        getByName("androidTestOnJvm") {
+        getByName("androidUnitTest") {
             dependencies {
                 implementation(libs.robolectric)
             }
         }
 
-        getByName("androidTestOnDevice") {
+        getByName("androidInstrumentedTest") {
             dependencies {
                 implementation(libs.androidx.test.runner)
                 implementation(libs.androidx.test.core)
@@ -123,6 +108,29 @@ kotlin {
     }
 
 }
+
+android {
+    namespace = "dev.scarlet.logger"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
 
 mavenPublishing {
     publishToMavenCentral()
