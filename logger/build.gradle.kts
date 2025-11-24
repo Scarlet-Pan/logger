@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.1"
 
 kotlin {
 
