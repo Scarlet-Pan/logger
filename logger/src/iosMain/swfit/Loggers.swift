@@ -61,8 +61,8 @@ extension SharedLogger {
     ///
     /// The initial value is the platform-specific system logger (equivalent to `SYSTEM` in Kotlin).
     public static var `default`: Logger {
-        get { SharedLogger.default_ }
-        set { SharedLogger.default_ = newValue }
+        get { SharedLogger.shared.default_ }
+        set { SharedLogger.shared.default_ = newValue }
     }
 
     /// Logs a message at the **DEBUG** level.
@@ -76,7 +76,7 @@ extension SharedLogger {
     ///   - message: The log message (must not be nil).
     ///   - error: An optional error; if provided, its description and stack trace (if available) should be included.
     public static func d(_ tag: String, _ message: String, error: Error? = nil) {
-        SharedLogger.d(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.d(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **INFO** level.
@@ -89,7 +89,7 @@ extension SharedLogger {
     ///   - message: The log message.
     ///   - error: An optional error to attach.
     public static func i(_ tag: String, _ message: String, error: Error? = nil) {
-        SharedLogger.i(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.i(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **WARN** level.
@@ -102,7 +102,7 @@ extension SharedLogger {
     ///   - message: The warning message. Defaults to an empty string if only an error is relevant.
     ///   - error: An optional error to attach.
     public static func w(_ tag: String, _ message: String = "", error: Error? = nil) {
-        SharedLogger.w(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.w(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **ERROR** level.
@@ -115,7 +115,7 @@ extension SharedLogger {
     ///   - message: A description of the error condition.
     ///   - error: An optional but highly recommended error object.
     public static func e(_ tag: String, _ message: String, error: Error? = nil) {
-        SharedLogger.e(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.e(tag: tag, msg: message, tr: error?.asException())
     }
 
 }
