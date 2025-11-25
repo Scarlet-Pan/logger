@@ -1,10 +1,8 @@
-// Loggers.swift
-//
 // Add this file to your iOS/macOS target to enable static-style logging:
-//   Logger.i("Tag", "Message")
+//   SharedLogger.i("Tag", "Message")
 //
 // This file is part of the Scarlet Logger KMP library.
-// https://github.com/scarlet-pan/logger
+// https://github.com/scarlet-pen/logger
 //
 // MIT License
 // Copyright (c) 2025 Scarlet Pan
@@ -18,19 +16,19 @@ import KmpLogger
 /// It supports four standard severity levels: DEBUG, INFO, WARN, and ERROR.
 ///
 /// The interface itself contains no implementation — actual behavior is determined by the concrete logger
-/// assigned to ``Logger/default``. By default, logs are printed to standard output (visible in Xcode console).
+/// assigned to ``SharedLogger/default``. By default, logs are printed to standard output (visible in Xcode console).
 ///
 /// All methods are thread-safe and may be called from any thread or async context.
 ///
 /// ### Default Behavior
 /// - On iOS/macOS: Messages are formatted and sent to `print()`, appearing in the Xcode console.
-/// - The initial value of ``Logger/default`` is the system-provided logger (`SYSTEM`).
+/// - The initial value of ``SharedLogger/default`` is the system-provided logger (`SYSTEM`).
 ///
 /// ### Customization
 /// Replace the global logger to route logs to files, network, third-party services, or apply filtering:
 /// ```swift
-/// Logger.default = MyCustomLogger()
-/// Logger.i("App", "Now using custom logger")
+/// SharedLogger.default = MyCustomLogger()
+/// SharedLogger.i("App", "Now using custom logger")
 /// ```
 ///
 /// ### Log Levels
@@ -43,15 +41,16 @@ import KmpLogger
 ///
 /// Example:
 /// ```swift
-/// Logger.d("Network", "Request body: \(json)")
-/// Logger.i("Auth", "User signed in")
-/// Logger.w("Cache", "Missed entry; fetching from network")
-/// Logger.e("Database", "Failed to open", error: dbError)
+/// SharedLogger.d("Network", "Request body: \(json)")
+/// SharedLogger.i("Auth", "User signed in")
+/// SharedLogger.w("Cache", "Missed entry; fetching from network")
+/// SharedLogger.e("Database", "Failed to open", error: dbError)
 /// ```
-extension Logger {
+extension SharedLogger {
+
     /// The global default logger instance used by all static logging methods.
     ///
-    /// This property acts as a delegate: every call like `Logger.i(...)` is forwarded to the current value
+    /// This property acts as a delegate: every call like `SharedLogger.i(...)` is forwarded to the current value
     /// of this property. Changing it takes effect immediately.
     ///
     /// On assignment, the new logger automatically logs an INFO message:
@@ -61,9 +60,9 @@ extension Logger {
     /// This helps diagnose logger pipeline changes at runtime.
     ///
     /// The initial value is the platform-specific system logger (equivalent to `SYSTEM` in Kotlin).
-    public static var `default`: Logging {
-        get { Logger.shared.default_}
-        set { Logger.shared.default_ = newValue }
+    public static var `default`: Logger {
+        get { SharedLogger.shared.default_ }
+        set { SharedLogger.shared.default_ = newValue }
     }
 
     /// Logs a message at the **DEBUG** level.
@@ -77,7 +76,7 @@ extension Logger {
     ///   - message: The log message (must not be nil).
     ///   - error: An optional error; if provided, its description and stack trace (if available) should be included.
     public static func d(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.d(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.d(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **INFO** level.
@@ -90,7 +89,7 @@ extension Logger {
     ///   - message: The log message.
     ///   - error: An optional error to attach.
     public static func i(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.i(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.i(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **WARN** level.
@@ -103,7 +102,7 @@ extension Logger {
     ///   - message: The warning message. Defaults to an empty string if only an error is relevant.
     ///   - error: An optional error to attach.
     public static func w(_ tag: String, _ message: String = "", error: Error? = nil) {
-        Logger.shared.w(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.w(tag: tag, msg: message, tr: error?.asException())
     }
 
     /// Logs a message at the **ERROR** level.
@@ -116,8 +115,9 @@ extension Logger {
     ///   - message: A description of the error condition.
     ///   - error: An optional but highly recommended error object.
     public static func e(_ tag: String, _ message: String, error: Error? = nil) {
-        Logger.shared.e(tag: tag, msg: message, tr: error?.asException())
+        SharedLogger.shared.e(tag: tag, msg: message, tr: error?.asException())
     }
+
 }
 
 extension Error {
