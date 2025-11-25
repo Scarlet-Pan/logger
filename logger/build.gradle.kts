@@ -2,8 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlin.multiplatform.android.library)
-    alias(libs.plugins.android.lint)
+    alias(libs.plugins.android.library)
     alias(libs.plugins.maven.publish)
     signing
 }
@@ -11,7 +10,11 @@ plugins {
 group = "io.github.scarlet-pan"
 version = "1.2.0-SNAPSHOT"
 
+val xcfName = "KmpLogger"
+
 kotlin {
+
+    applyDefaultHierarchyTemplate()
 
     jvm {
         compilations.configureEach {
@@ -21,46 +24,37 @@ kotlin {
         }
     }
 
-    androidLibrary {
-        namespace = "dev.scarlet.logger"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
-
-        withJava() // enable java compilation support
-        withAndroidTestOnJvmBuilder {
-
-        }.configure {
-
-        }
-        withAndroidTestOnDeviceBuilder {
-            sourceSetTreeName = "test"
-        }.configure {
-            instrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        }
-        compilations.configureEach {
-            compilerOptions.configure {
-                jvmTarget.set(JvmTarget.JVM_1_8)
+    androidTarget {
+        publishLibraryVariants("release")
+        compilations.all {
+            kotlinOptions {
+                jvmTarget = "1.8"
             }
         }
     }
 
-    val xcfName = "loggerKit"
-
     iosX64 {
-        binaries.framework {
-            baseName = xcfName
+        binaries {
+            framework {
+                baseName = xcfName
+                isStatic = false
+            }
         }
     }
-
     iosArm64 {
-        binaries.framework {
-            baseName = xcfName
+        binaries {
+            framework {
+                baseName = xcfName
+                isStatic = false
+            }
         }
     }
-
-    iosSimulatorArm64 {
-        binaries.framework {
-            baseName = xcfName
+    iosSimulatorArm64{
+        binaries {
+            framework {
+                baseName = xcfName
+                isStatic = false
+            }
         }
     }
 
@@ -94,14 +88,14 @@ kotlin {
             }
         }
 
-        getByName("androidTestOnJvm") {
+        getByName("androidUnitTest") {
             dependencies {
                 implementation(libs.junit)
                 implementation(libs.robolectric)
             }
         }
 
-        getByName("androidTestOnDevice") {
+        getByName("androidInstrumentedTest") {
             dependencies {
                 implementation(libs.androidx.test.runner)
                 implementation(libs.androidx.test.core)
@@ -116,6 +110,12 @@ kotlin {
             }
         }
 
+        iosTest {
+            dependencies {
+
+            }
+        }
+
         jsTest {
             dependencies {
                 implementation(libs.kotlin.test)
@@ -125,6 +125,29 @@ kotlin {
     }
 
 }
+
+android {
+    namespace = "dev.scarlet.logger"
+    compileSdk = libs.versions.android.compileSdk.get().toInt()
+
+    defaultConfig {
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()
+            withJavadocJar()
+        }
+    }
+}
+
 
 mavenPublishing {
     publishToMavenCentral()
@@ -166,4 +189,90 @@ signing {
         providers.gradleProperty("signingInMemoryKeyPassword").orNull
     )
     sign(publishing.publications)
+}
+
+
+tasks.register<Exec>("mergeSimulatorFrameworks") {
+    onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
+
+    val xcfName = xcfName
+    val universalDir = layout.buildDirectory.dir("tmp/simulator-universal").get().asFile
+    val universalFramework = File(universalDir, "${xcfName}.framework")
+
+    dependsOn(
+        tasks.named("linkReleaseFrameworkIosX64"),
+        tasks.named("linkReleaseFrameworkIosSimulatorArm64")
+    )
+
+    inputs.file(layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework/${xcfName}"))
+    inputs.file(layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework/${xcfName}"))
+
+    outputs.dir(universalDir)
+
+    doFirst {
+        universalDir.mkdirs()
+        val appleSiliconFramework = layout.buildDirectory.dir("bin/iosSimulatorArm64/releaseFramework").get().asFile.resolve("${xcfName}.framework")
+        appleSiliconFramework.copyRecursively(universalFramework, overwrite = true)
+    }
+
+    commandLine = listOf(
+        "lipo", "-create",
+        layout.buildDirectory.file("bin/iosX64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
+        layout.buildDirectory.file("bin/iosSimulatorArm64/releaseFramework/${xcfName}.framework/${xcfName}").get().asFile.absolutePath,
+        "-output", File(universalFramework, xcfName).absolutePath
+    )
+}
+
+tasks.register<Exec>("buildXCFramework") {
+    onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
+
+    val rootDir = project.rootDir
+    val xcfName = xcfName
+    val output = File(rootDir, "${xcfName}.xcframework")
+    val version = project.version.toString()
+
+    dependsOn(
+        "linkReleaseFrameworkIosArm64",
+        "linkReleaseFrameworkIosX64",
+        "linkReleaseFrameworkIosSimulatorArm64",
+        "mergeSimulatorFrameworks"
+    )
+
+    outputs.dir(output)
+    outputs.file(File(rootDir, "${xcfName}.podspec"))
+
+    doFirst {
+        if (output.exists()) {
+            println("🗑️ Deleting existing $output")
+            output.deleteRecursively()
+        }
+    }
+
+    commandLine = listOf(
+        "xcodebuild", "-create-xcframework",
+        "-output", output.absolutePath,
+        "-framework", layout.buildDirectory.file("bin/iosArm64/releaseFramework/${xcfName}.framework").get().asFile.absolutePath,
+        "-framework", layout.buildDirectory.dir("tmp/simulator-universal").get().asFile.resolve("${xcfName}.framework").absolutePath
+    )
+
+    doLast {
+        if (!output.exists()) throw RuntimeException("xcframework not created!")
+
+        File(rootDir, "${xcfName}.podspec").writeText("""
+            Pod::Spec.new do |s|
+              s.name         = '$xcfName'
+              s.version      = '$version'
+              s.summary      = 'Kotlin Multiplatform logging library for iOS'
+              s.homepage     = 'https://github.com/Scarlet-Pan/logger'
+              s.license      = { :type => 'MIT', :file => 'LICENSE' }
+              s.authors      = { 'Scarlet Pan' => 'scarletpan@qq.com' }
+              s.source       = { :git => 'https://github.com/Scarlet-Pan/logger.git', :tag => '$version' }
+              s.vendored_frameworks = '$xcfName.xcframework'
+              s.ios.deployment_target = '12.0'
+              s.swift_version = '5.0'
+            end
+        """.trimIndent())
+
+        println("✅ Success: $xcfName.xcframework and $xcfName.podspec generated (version: $version)")
+    }
 }
