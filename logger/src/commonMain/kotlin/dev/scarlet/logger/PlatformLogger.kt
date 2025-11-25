@@ -4,7 +4,7 @@ package dev.scarlet.logger
  * The host platform's implementation of [Logger].
  *
  * @author Scarlet Pan
- * @version 1.0.0
+ * @version 1.0.1
  */
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 internal expect object PlatformLogger : Logger {

@@ -1,6 +1,0 @@
-jdk:
-  - openjdk17
-groupId: com.github.Scarlet-Pan
-artifactId: logger
-install:
-  - ./gradlew publishToMavenLocal

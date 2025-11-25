@@ -1,11 +1,8 @@
 # Logger
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)
-[![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
-[![Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
-[![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
-[![Test Status](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml)
-[![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+A **Kotlin Multiplatform (KMP)** logging library that lets you **write once, log everywhere** — with full support for **Android, iOS, JVM, and JavaScript** using a familiar Android-style API (`d()`, `i()`, `w()`, `e()`). No `expect/actual`, no platform-specific code, just shared Kotlin that works out of the box.
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm?label=Maven%20Central)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm) [![Kotlin Multiplatform](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html) [![Platforms: Android | iOS | JVM | JS](https://img.shields.io/badge/Platforms-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]() [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org) [![Test Status](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml) [![License](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -26,7 +23,9 @@
 
 ## 📦 Installation
 
-Add to your `build.gradle.kts` (shared module or standalone project):
+### Kotlin Multiplatform Projects (Recommended)
+
+Add to your `shared` module’s `build.gradle.kts`:
 
 ```kotlin
 dependencies {
@@ -34,7 +33,36 @@ dependencies {
 }
 ```
 
-No extra setup. No platform-specific configuration.
+✅ No extra setup. No platform-specific configuration. Works automatically across all targets.
+
+---
+
+### Pure JVM / Java Projects
+
+If you're using this library in a **non-KMP JVM project** (e.g., Spring Boot, Quarkus, or plain Java), you must depend on the **JVM-specific artifact**:
+
+```kotlin
+// Gradle (Kotlin DSL)
+implementation("io.github.scarlet-pan:logger-jvm:1.0.0")
+```
+
+```groovy
+// Gradle (Groovy DSL)
+implementation 'io.github.scarlet-pan:logger-jvm:1.0.0'
+```
+
+```xml
+<!-- Maven -->
+<dependency>
+    <groupId>io.github.scarlet-pan</groupId>
+    <artifactId>logger-jvm</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+> ⚠️ **Important**: The `logger` artifact is a Kotlin Multiplatform metadata package and **cannot be used directly in Java-only projects**. Always use `logger-jvm` for pure JVM environments.
+
+---
 
 > 🔧 **Minimum Requirements**
 > - Kotlin **≥ 1.9.0** (built with **1.9.24**)
@@ -124,7 +152,8 @@ Logger.setDefault(combined);
 > ⚠️ Note:  
 > - The `DefaultLogger` class exists **only for Java interop**.  
 > - All advanced features (e.g., custom loggers) should be configured via Kotlin.  
-> - This is **not a Java-first logging framework** — Kotlin is the primary language.
+> - This is **not a Java-first logging framework** — Kotlin is the primary language.  
+> - **Make sure you’re using `logger-jvm`**, not `logger`, in your Java project!
 
 ---
 
@@ -167,10 +196,12 @@ Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## 📄 License
 
-This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
+This project is licensed under the **MIT License** – see the [LICENSE](LICENSE) file for details.
 
+Copyright © 2025 Scarlet Pan
 
 <br><br>
+
 <div align="center">
   <hr width="80%" />
   <p><em>—— 中文文档 Chinese Documentation ——</em></p>
@@ -180,12 +211,9 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 
 # Logger
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger)](https://search.maven.org/artifact/io.github.scarlet-pan/logger)
-[![Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html)
-[![支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]()
-[![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org)
-[![测试状态](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml)
-[![许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
+一个 **Kotlin 多平台（Kotlin Multiplatform, KMP）** 日志库，让你 **一次编写，处处打日志** —— 完整支持 **Android、iOS、JVM 和 JavaScript**，并提供熟悉的 Android 风格 API（`d()`、`i()`、`w()`、`e()`）。无需 `expect/actual`，无需平台专属代码，只需一份共享 Kotlin，开箱即用。
+
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.scarlet-pan/logger-jvm?label=Maven%20Central)](https://search.maven.org/artifact/io.github.scarlet-pan/logger-jvm) [![Kotlin 多平台](https://img.shields.io/badge/Kotlin-Multiplatform-blue?logo=kotlin)](https://kotlinlang.org/docs/multiplatform.html) [![支持平台: Android | iOS | JVM | JS](https://img.shields.io/badge/平台-Android%20%7C%20iOS%20%7C%20JVM%20%7C%20JS-lightgrey)]() [![Kotlin ≥1.9.0](https://img.shields.io/badge/Kotlin-≥1.9.0-orange?logo=kotlin)](https://kotlinlang.org) [![测试状态](https://github.com/scarlet-pan/logger/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/scarlet-pan/logger/actions/workflows/test.yml) [![许可证](https://img.shields.io/github/license/scarlet-pan/logger)](LICENSE)
 
 ---
 
@@ -206,7 +234,9 @@ This project is licensed under the **MIT License** – see [LICENSE](LICENSE).
 
 ## 📦 安装
 
-在 `build.gradle.kts` 中添加依赖（无论是 KMP 共享模块还是单平台项目）：
+### Kotlin 多平台项目（推荐）
+
+在你的 `shared` 模块的 `build.gradle.kts` 中添加：
 
 ```kotlin
 dependencies {
@@ -214,7 +244,36 @@ dependencies {
 }
 ```
 
-无需额外配置，开箱即用。
+✅ 无需额外配置，自动适配所有目标平台。
+
+---
+
+### 纯 JVM / Java 项目
+
+如果你在 **非 KMP 的 JVM 项目** 中使用本库（如 Spring Boot、Quarkus 或普通 Java 项目），请务必使用 **JVM 专用工件**：
+
+```kotlin
+// Gradle（Kotlin DSL）
+implementation("io.github.scarlet-pan:logger-jvm:1.0.0")
+```
+
+```groovy
+// Gradle（Groovy DSL）
+implementation 'io.github.scarlet-pan:logger-jvm:1.0.0'
+```
+
+```xml
+<!-- Maven -->
+<dependency>
+    <groupId>io.github.scarlet-pan</groupId>
+    <artifactId>logger-jvm</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+> ⚠️ **重要提示**：`logger` 是一个 Kotlin 多平台元数据包，**不能在纯 Java 项目中直接使用**。请始终在 JVM 环境中使用 `logger-jvm`。
+
+---
 
 > 🔧 **最低要求**
 > - Kotlin **≥ 1.9.0**（基于 **1.9.24** 构建）
@@ -253,7 +312,7 @@ Logger.e("Crash", "Unexpected error", exception)
 使用 `+` 操作符组合多个日志器：
 
 ```kotlin
-// Send logs to both system and your custom logger
+// 同时输出到系统和自定义日志器
 Logger.default = Logger.SYSTEM + CustomLogger()
 ```
 
@@ -264,9 +323,9 @@ Logger.default = Logger.SYSTEM + CustomLogger()
 ```kotlin
 object FileLogger : Logger {
     override fun d(tag: String, msg: String, tr: Throwable?) {
-        // Write to file, send to remote, etc.
+        // 写入文件、发送到远程等
     }
-    // ... implement i, w, e
+    // ... 实现 i, w, e
 }
 ```
 
@@ -304,7 +363,8 @@ Logger.setDefault(combined);
 > ⚠️ 注意：  
 > - `DefaultLogger` 类 **仅用于 Java 互操作**。  
 > - 所有高级功能（如自定义日志器）建议通过 Kotlin 配置。  
-> - 本库 **并非 Java 优先的日志框架** —— Kotlin 是主要语言。
+> - 本库 **并非 Java 优先的日志框架** —— Kotlin 是主要语言。  
+> - **请确保你在 Java 项目中使用的是 `logger-jvm`，而非 `logger`！**
 
 ---
 
@@ -347,4 +407,6 @@ fun e(tag: String, msg: String, tr: Throwable? = null)
 
 ## 📄 许可证
 
-本项目采用 **MIT 许可证** —— 详见 [LICENSE](LICENSE)。
+本项目采用 **MIT 许可证** —— 详见 [LICENSE](LICENSE) 文件。
+
+版权所有 © 2025 Scarlet Pan

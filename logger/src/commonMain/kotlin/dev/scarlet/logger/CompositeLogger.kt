@@ -11,12 +11,12 @@ import kotlin.jvm.JvmName
  * All log calls are delegated to both [head] and [tail].
  *
  * @author Scarlet Pan
- * @version 1.0.0
+ * @version 1.0.1
  */
 internal class CompositeLogger(
     private val head: Logger,
     private val tail: Logger,
-) : Logger {
+) : AbsLogger() {
 
     private val properties: List<Logger> by lazy {
         val list = mutableListOf<Logger>()
@@ -27,25 +27,11 @@ internal class CompositeLogger(
 
     override fun toString(): String = properties.toString()
 
-    override fun d(tag: String, msg: String, tr: Throwable?) {
-        head.d(tag, msg, tr)
-        tail.d(tag, msg, tr)
+    override fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
+        head.log(level, tag, msg, tr)
+        tail.log(level, tag, msg, tr)
     }
 
-    override fun i(tag: String, msg: String, tr: Throwable?) {
-        head.i(tag, msg, tr)
-        tail.i(tag, msg, tr)
-    }
-
-    override fun w(tag: String, msg: String, tr: Throwable?) {
-        head.w(tag, msg, tr)
-        tail.w(tag, msg, tr)
-    }
-
-    override fun e(tag: String, msg: String, tr: Throwable?) {
-        head.w(tag, msg, tr)
-        tail.w(tag, msg, tr)
-    }
 }
 
 /**
