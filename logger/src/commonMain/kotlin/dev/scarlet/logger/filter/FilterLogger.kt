@@ -2,6 +2,12 @@ package dev.scarlet.logger.filter
 
 import dev.scarlet.logger.Content
 import dev.scarlet.logger.Logger
+import dev.scarlet.logger.Logger.Level.DEBUG
+import dev.scarlet.logger.Logger.Level.ERROR
+import dev.scarlet.logger.Logger.Level.INFO
+import dev.scarlet.logger.Logger.Level.WARN
+import dev.scarlet.logger.filter.CompositeFilter.Companion.filter
+import dev.scarlet.logger.log
 import kotlin.jvm.JvmInline
 
 /**
@@ -26,47 +32,29 @@ internal sealed interface FilterLogger : Logger {
 
     val logger: Logger
 
-    override fun d(tag: String, msg: String, tr: Throwable?) {
-        if (filter.filter()) logger.d(tag, msg, tr)
+    override fun d(tag: String, msg: String, tr: Throwable?) = log(DEBUG, tag, msg, tr)
+
+    fun d(tag: String, lazy: () -> Content) = log(DEBUG, tag, lazy)
+
+    override fun i(tag: String, msg: String, tr: Throwable?) = log(INFO, tag, msg, tr)
+
+    fun i(tag: String, lazy: () -> Content) = log(INFO, tag, lazy)
+
+    override fun w(tag: String, msg: String, tr: Throwable?) = log(WARN, tag, msg, tr)
+
+    fun w(tag: String, lazy: () -> Content) = log(WARN, tag, lazy)
+
+    override fun e(tag: String, msg: String, tr: Throwable?) = log(ERROR, tag, msg, tr)
+
+    fun e(tag: String, lazy: () -> Content) = log(ERROR, tag, lazy)
+
+    fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
+        if (filter.filter(level, tag)) logger.log(level, tag, msg, tr)
     }
 
-    override fun i(tag: String, msg: String, tr: Throwable?) {
-        if (filter.filter()) logger.i(tag, msg, tr)
-    }
-
-    override fun w(tag: String, msg: String, tr: Throwable?) {
-        if (filter.filter()) logger.w(tag, msg, tr)
-    }
-
-    override fun e(tag: String, msg: String, tr: Throwable?) {
-        if (filter.filter()) logger.e(tag, msg, tr)
-    }
-
-    fun d(tag: String, lazy: () -> Content) {
-        if (filter.filter()) {
-            val content = lazy()
-            logger.d(tag, content.message, content.throwable)
-        }
-    }
-
-    fun i(tag: String, lazy: () -> Content) {
-        if (filter.filter()) {
-            val content = lazy()
-            logger.i(tag, content.message, content.throwable)
-        }
-    }
-
-    fun w(tag: String, lazy: () -> Content) {
-        if (filter.filter()) {
-            val content = lazy()
-            logger.w(tag, content.message, content.throwable)
-        }
-    }
-
-    fun e(tag: String, lazy: () -> Content) {
-        if (filter.filter()) {
-            val content = lazy()
-            logger.e(tag, content.message, content.throwable)
+    fun log(level: Logger.Level, tag: String, lazy: () -> Content) {
+        if (filter.filter(level, tag)) lazy().let {
+            logger.log(level, tag, it.message, it.throwable)
         }
     }
 

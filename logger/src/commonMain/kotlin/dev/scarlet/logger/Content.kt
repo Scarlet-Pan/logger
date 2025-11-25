@@ -44,7 +44,6 @@ sealed interface Content {
          * @param msg the log message string
          * @return a [Message] instance wrapping the given string
          */
-        @JvmStatic
         internal fun of(msg: String): Content = Message(msg)
 
         /**
