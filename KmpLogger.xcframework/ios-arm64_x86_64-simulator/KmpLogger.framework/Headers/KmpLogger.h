@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class KmpLoggerKotlinThrowable, LoggingLevel, KmpLoggerAbsLogger, Logger, KmpLoggerKotlinEnumCompanion, KmpLoggerKotlinEnum<E>, KmpLoggerKotlinArray<T>;
+@class KmpLoggerKotlinThrowable, KmpLoggerLoggerLevel, KmpLoggerAbsLogger, SharedLogger, KmpLoggerKotlinEnumCompanion, KmpLoggerKotlinEnum<E>, KmpLoggerKotlinArray<T>;
 
-@protocol Logging, KmpLoggerKotlinComparable, KmpLoggerKotlinIterator;
+@protocol KmpLoggerLogger, KmpLoggerKotlinComparable, KmpLoggerKotlinIterator;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -144,7 +144,8 @@ __attribute__((swift_name("KotlinBoolean")))
 + (instancetype)numberWithBool:(BOOL)value;
 @end
 
-@protocol Logging
+__attribute__((swift_name("Logger")))
+@protocol KmpLoggerLogger
 @required
 - (void)dTag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("d(tag:msg:tr:)")));
 - (void)eTag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("e(tag:msg:tr:)")));
@@ -154,7 +155,7 @@ __attribute__((swift_name("KotlinBoolean")))
 @end
 
 __attribute__((swift_name("AbsLogger")))
-@interface KmpLoggerAbsLogger : KmpLoggerBase <Logging>
+@interface KmpLoggerAbsLogger : KmpLoggerBase <KmpLoggerLogger>
 - (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
 + (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
 - (void)dTag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("d(tag:msg:tr:)")));
@@ -164,35 +165,35 @@ __attribute__((swift_name("AbsLogger")))
 /**
  * @note This method has protected visibility in Kotlin source and is intended only for use by subclasses.
 */
-- (void)logLevel:(LoggingLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(level:tag:msg:tr:)")));
+- (void)logLevel:(KmpLoggerLoggerLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(level:tag:msg:tr:)")));
 - (void)wTag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("w(tag:msg:tr:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
-@interface Logger : KmpLoggerAbsLogger
+@interface SharedLogger : KmpLoggerAbsLogger
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 - (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
 + (instancetype)new __attribute__((unavailable));
-+ (instancetype)logger __attribute__((swift_name("init()")));
-@property (class, readonly, getter=shared) Logger *shared __attribute__((swift_name("shared")));
++ (instancetype)sharedLogger __attribute__((swift_name("init()")));
+@property (class, readonly, getter=shared) SharedLogger *shared __attribute__((swift_name("shared")));
 
 /**
  * @note This method has protected visibility in Kotlin source and is intended only for use by subclasses.
 */
-- (void)logLevel:(LoggingLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(level:tag:msg:tr:)")));
+- (void)logLevel:(KmpLoggerLoggerLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(level:tag:msg:tr:)")));
 
 /**
  * @note annotations
  *   kotlin.jvm.JvmStatic
 */
-@property (readonly) id<Logging> SYSTEM __attribute__((swift_name("SYSTEM")));
+@property (readonly) id<KmpLoggerLogger> SYSTEM __attribute__((swift_name("SYSTEM")));
 
 /**
  * @note annotations
  *   kotlin.jvm.JvmStatic
 */
-@property (getter=default, setter=setDefault:) id<Logging> default_ __attribute__((swift_name("default_")));
+@property (getter=default, setter=setDefault:) id<KmpLoggerLogger> default_ __attribute__((swift_name("default_")));
 @end
 
 __attribute__((swift_name("KotlinComparable")))
@@ -214,16 +215,17 @@ __attribute__((swift_name("KotlinEnum")))
 @end
 
 __attribute__((objc_subclassing_restricted))
-@interface LoggingLevel : KmpLoggerKotlinEnum<LoggingLevel *>
+__attribute__((swift_name("LoggerLevel")))
+@interface KmpLoggerLoggerLevel : KmpLoggerKotlinEnum<KmpLoggerLoggerLevel *>
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 - (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (class, readonly) LoggingLevel *debug __attribute__((swift_name("debug")));
-@property (class, readonly) LoggingLevel *info __attribute__((swift_name("info")));
-@property (class, readonly) LoggingLevel *warn __attribute__((swift_name("warn")));
-@property (class, readonly) LoggingLevel *error __attribute__((swift_name("error")));
-+ (KmpLoggerKotlinArray<LoggingLevel *> *)values __attribute__((swift_name("values()")));
-@property (class, readonly) NSArray<LoggingLevel *> *entries __attribute__((swift_name("entries")));
+@property (class, readonly) KmpLoggerLoggerLevel *debug __attribute__((swift_name("debug")));
+@property (class, readonly) KmpLoggerLoggerLevel *info __attribute__((swift_name("info")));
+@property (class, readonly) KmpLoggerLoggerLevel *warn __attribute__((swift_name("warn")));
+@property (class, readonly) KmpLoggerLoggerLevel *error __attribute__((swift_name("error")));
++ (KmpLoggerKotlinArray<KmpLoggerLoggerLevel *> *)values __attribute__((swift_name("values()")));
+@property (class, readonly) NSArray<KmpLoggerLoggerLevel *> *entries __attribute__((swift_name("entries")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -234,7 +236,7 @@ __attribute__((swift_name("CompositeLoggerKt")))
  * @note annotations
  *   kotlin.jvm.JvmName(name="combine")
 */
-+ (id<Logging>)plus:(id<Logging>)receiver other:(id<Logging>)other __attribute__((swift_name("plus(_:other:)")));
++ (id<KmpLoggerLogger>)plus:(id<KmpLoggerLogger>)receiver other:(id<KmpLoggerLogger>)other __attribute__((swift_name("plus(_:other:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -245,7 +247,7 @@ __attribute__((swift_name("LoggersKt")))
  * @note annotations
  *   kotlin.jvm.JvmOverloads
 */
-+ (void)log:(id<Logging>)receiver level:(LoggingLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(_:level:tag:msg:tr:)")));
++ (void)log:(id<KmpLoggerLogger>)receiver level:(KmpLoggerLoggerLevel *)level tag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("log(_:level:tag:msg:tr:)")));
 @end
 
 __attribute__((swift_name("KotlinThrowable")))
