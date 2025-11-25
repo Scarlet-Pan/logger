@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory
  * to be present at runtime. Ensure your project includes an appropriate SLF4J provider.
  *
  * @author Scarlet Pan
- * @since 1.0.0
+ * @version 1.0.0
  */
 object Slf4jLogger : dev.scarlet.logger.Logger {
 

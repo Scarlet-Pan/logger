@@ -32,7 +32,6 @@ import kotlin.native.ObjCName
  * @author Scarlet Pan
  * @version 1.0.1
  */
-@ObjCName("Logging", exact = true)
 interface Logger {
 
     /**
@@ -43,7 +42,7 @@ interface Logger {
      * Logger.e("Database", "Failed to open it.", exception)
      * ```
      */
-    @ObjCName("Logger", exact = true)
+    @ObjCName("SharedLogger", exact = true)
     companion object : AbsLogger() {
 
         private const val TAG = "Logger"
@@ -166,7 +165,7 @@ interface Logger {
      * ```
      *
      * @author Scarlet Pan
-     * @since 1.0.0
+     * @version 1.0.0
      */
     enum class Level {
 

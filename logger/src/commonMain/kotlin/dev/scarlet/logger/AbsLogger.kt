@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalObjCName::class)
+
 package dev.scarlet.logger
 
 import dev.scarlet.logger.Logger.Level
@@ -5,6 +7,7 @@ import dev.scarlet.logger.Logger.Level.DEBUG
 import dev.scarlet.logger.Logger.Level.ERROR
 import dev.scarlet.logger.Logger.Level.INFO
 import dev.scarlet.logger.Logger.Level.WARN
+import kotlin.experimental.ExperimentalObjCName
 
 /**
  * An abstract base implementation of the [Logger] interface that provides default
@@ -27,7 +30,7 @@ import dev.scarlet.logger.Logger.Level.WARN
  * ```
  *
  * @author Scarlet Pan
- * @since 1.0.0
+ * @version 1.0.0
  */
 abstract class AbsLogger : Logger {
 
