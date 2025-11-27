@@ -1,24 +1,26 @@
 package dev.scarlet.logger.filter
 
 import dev.scarlet.logger.Content
+import dev.scarlet.logger.Key
+import dev.scarlet.logger.Key.Companion.key
 import dev.scarlet.logger.Logger
 import dev.scarlet.logger.Logger.Level.DEBUG
 import dev.scarlet.logger.Logger.Level.ERROR
 import dev.scarlet.logger.Logger.Level.INFO
 import dev.scarlet.logger.Logger.Level.WARN
-import dev.scarlet.logger.filter.CompositeFilter.Companion.filter
 import dev.scarlet.logger.log
 import kotlin.jvm.JvmInline
 
 /**
- * 过滤式[dev.scarlet.logger.Logger]。
+ * A filtering [Logger] that wraps another logger and applies a filter to log messages.
+ * This interface allows for the creation of filtered loggers, where log messages can be conditionally processed or ignored based on a provided filter.
  *
  * @author Scarlet Pan
  * @version 1.0.0
  */
 internal sealed interface FilterLogger : Logger {
 
-    companion object {
+    companion object : Key<FilterLogger> by key() {
 
         fun of(logger: Logger, filter: Filter? = null) =
             when (filter) {
@@ -28,8 +30,14 @@ internal sealed interface FilterLogger : Logger {
 
     }
 
+    /**
+     * The filter applied to log messages.
+     */
     val filter: Filter
 
+    /**
+     * The [Logger] that this filter is applied to.
+     */
     val logger: Logger
 
     override fun d(tag: String, msg: String, tr: Throwable?) = log(DEBUG, tag, msg, tr)
@@ -61,10 +69,9 @@ internal sealed interface FilterLogger : Logger {
     @JvmInline
     private value class Default(override val logger: Logger) : FilterLogger {
 
-        override val filter: Filter
-            get() = Filter.default
+        override val filter: Filter get() = Filter.default
 
-        override fun toString(): String = "DefaultFilterLogger(logger=$logger)"
+        override fun toString(): String = "FilterLogger(filter=$filter, logger=$logger)"
 
     }
 

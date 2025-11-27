@@ -5,8 +5,8 @@
 package dev.scarlet.logger.filter
 
 import dev.scarlet.logger.Content
-import dev.scarlet.logger.Logger
 import dev.scarlet.logger.Content.Companion.with
+import dev.scarlet.logger.Logger
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmMultifileClass
 import kotlin.jvm.JvmName
