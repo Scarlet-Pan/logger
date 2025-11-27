@@ -39,7 +39,7 @@ class LazyLoggerTest {
             check(list.all { it >= 0 })
             Logger.i(TAG) { "All of element is non-negative in $list." }
         } catch (e: Exception) {
-            Logger.w(TAG) { "At least one element is negative in $list.".with(e) }
+            Logger.w(TAG) { "At least one element is negative in $list." with e }
         }
     }
 
@@ -79,7 +79,7 @@ class LazyLoggerTest {
         val exception = RuntimeException("test")
         Logger.d(TAG) {
             executed = true
-            "Debug with exception".with(exception)
+            "Debug with exception" with exception
         }
         assertFalse(executed)
     }

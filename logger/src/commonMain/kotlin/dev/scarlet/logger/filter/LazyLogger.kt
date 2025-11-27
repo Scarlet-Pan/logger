@@ -47,7 +47,7 @@ fun Logger.d(tag: String, lazy: () -> String) = d(tag, lazy.asContent())
  * Example:
  * ```kotlin
  * val e = IOException("Timeout")
- * Logger.d("Network") { "Failed to connect".with(e) }
+ * Logger.d("Network") { "Failed to connect" with e }
  * ```
  *
  * @param tag A label identifying the source of the log message.
@@ -90,7 +90,7 @@ fun Logger.i(tag: String, lazy: () -> String) = i(tag, lazy.asContent())
  *
  * Example:
  * ```kotlin
- * Logger.i("Migration") { "Database upgraded to v3".with(e) }
+ * Logger.i("Migration") { "Database upgraded to v3" with e }
  * ```
  *
  * @param tag A label identifying the source of the log message.
@@ -134,7 +134,7 @@ fun Logger.w(tag: String, lazy: () -> String) = w(tag, lazy.asContent())
  * Example:
  * ```kotlin
  * val fallback = loadFallbackConfig()
- * Logger.w("Config") { "Primary config missing, using fallback".with(e) }
+ * Logger.w("Config") { "Primary config missing, using fallback" with e }
  * ```
  *
  * @param tag A label identifying the source of the warning.
@@ -181,7 +181,7 @@ fun Logger.e(tag: String, lazy: () -> String) = e(tag, lazy.asContent())
  * try {
  *     process(data)
  * } catch (e: Exception) {
- *     Logger.e("Processor") { "Failed to handle input".with(e) }
+ *     Logger.e("Processor") { "Failed to handle input" with e }
  * }
  * ```
  *

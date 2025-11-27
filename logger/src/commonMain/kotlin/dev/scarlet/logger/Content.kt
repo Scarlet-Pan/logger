@@ -20,7 +20,7 @@ import kotlin.jvm.JvmStatic
  * val content2 = Content.of("Failed to load data", IOException("Network down"))
  *
  * // Infix-style creation
- * val content3 = "Database connection failed".with(SQLException("Timeout"))
+ * val content3 = "Database connection failed" with SQLException("Timeout")
  * ```
  *
  * The companion object provides factory methods to construct instances safely and idiomatically.
@@ -63,14 +63,14 @@ sealed interface Content {
          *
          * Provides a fluent, readable way to create error logs:
          * ```kotlin
-         * "Failed to parse config".with(e)
+         * "Failed to parse config" with e
          * ```
          *
          * @receiver the log message
          * @param exception the [Throwable] to attach
          * @return a [Error] instance
          */
-        fun String.with(exception: Throwable) = of(this, exception)
+        infix fun String.with(exception: Throwable) = of(this, exception)
 
     }
 
