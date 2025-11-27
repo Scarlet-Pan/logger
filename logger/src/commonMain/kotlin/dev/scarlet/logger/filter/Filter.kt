@@ -1,5 +1,4 @@
-@file:JvmName("Filters")
-@file:JvmMultifileClass
+@file:JvmName("Filters") @file:JvmMultifileClass
 
 package dev.scarlet.logger.filter
 
@@ -69,6 +68,8 @@ sealed interface Filter {
          */
         val NONE: Filter by lazy { SwitchFilter(false) }
 
+        private var _default: Filter? = null
+
         /**
          * The global default filter.
          *
@@ -89,9 +90,10 @@ sealed interface Filter {
          * You can assign a custom filter at any time to adjust logging behavior dynamically.
          */
         @JvmStatic
-        var default: Filter = platformFilter
+        var default: Filter
+            get() = _default ?: platformFilter.also { _default = it }
             set(value) {
-                field = value.also {
+                _default = value.also {
                     val logger = Logger.default - FilterLogger
                     logger.i(TAG, "Default filter change to $it.")
                 }
