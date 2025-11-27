@@ -21,12 +21,12 @@ class LazyLoggerTest {
     @BeforeTest
     fun setUp() {
         defaultFilter = Filter.default
-        Filter.default = Filter.NONE
+        Filter._default = Filter.NONE
     }
 
     @AfterTest
     fun tearDown() {
-        Filter.default = defaultFilter
+        Filter._default = defaultFilter
     }
 
     @Test

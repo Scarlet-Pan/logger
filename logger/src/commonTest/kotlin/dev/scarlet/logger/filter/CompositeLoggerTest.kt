@@ -331,26 +331,28 @@ class CompositeLoggerTest {
         assertSame(EmptyLogger, result)
     }
 
-}
+    private class TestLogger(val name: String) : AbsLogger() {
 
-private class TestLogger(val name: String) : AbsLogger() {
+        companion object : Key<TestLogger> by key()
 
-    companion object : Key<TestLogger> by key()
+        val logs = mutableListOf<String>()
 
-    val logs = mutableListOf<String>()
+        override fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
+            logs.add("$name: $msg")
+        }
+    }
 
-    override fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
-        logs.add("$name: $msg")
+    private class FileLogger : AbsLogger() {
+
+        companion object : Key<FileLogger> by key()
+
+        val logs = mutableListOf<String>()
+
+        override fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
+            logs.add("$tag: $msg")
+        }
     }
 }
 
-private class FileLogger : AbsLogger() {
 
-    companion object : Key<FileLogger> by key()
 
-    val logs = mutableListOf<String>()
-
-    override fun log(level: Logger.Level, tag: String, msg: String, tr: Throwable?) {
-        logs.add("$tag: $msg")
-    }
-}

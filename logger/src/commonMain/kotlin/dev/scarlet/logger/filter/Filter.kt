@@ -1,4 +1,5 @@
-@file:JvmName("Filters") @file:JvmMultifileClass
+@file:JvmName("Filters")
+@file:JvmMultifileClass
 
 package dev.scarlet.logger.filter
 
@@ -68,7 +69,8 @@ sealed interface Filter {
          */
         val NONE: Filter by lazy { SwitchFilter(false) }
 
-        private var _default: Filter? = null
+        @Suppress("ObjectPropertyName")
+        /* VisibleForTesting */internal var _default: Filter? = null
 
         /**
          * The global default filter.
@@ -320,4 +322,7 @@ fun Logger.withFilter(filter: Filter): Logger = FilterLogger.of(this, filter)
  * val restored = filtered.withoutFilter()  // behaves like [base]
  * ```
  */
-fun Logger.withoutFilter(): Logger = this - FilterLogger
+fun Logger.withoutFilter(): Logger = when (this) {
+    is FilterLogger -> logger
+    else -> this
+}
