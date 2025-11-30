@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "io.github.scarlet-pan"
-version = "1.1.0"
+version = "1.2.0"
 
 val xcfName = "KmpLogger"
 
@@ -72,6 +72,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.kotlin.stdlib)
+                implementation(libs.kotlinx.coroutines.core)
             }
         }
 
@@ -89,6 +90,7 @@ kotlin {
 
         getByName("androidUnitTest") {
             dependencies {
+                implementation(libs.junit)
                 implementation(libs.robolectric)
             }
         }
