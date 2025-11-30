@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class KmpLoggerKotlinThrowable, KmpLoggerLoggerLevel, KmpLoggerAbsLogger, SharedLogger, KmpLoggerKotlinEnumCompanion, KmpLoggerKotlinEnum<E>, KmpLoggerKotlinArray<T>;
+@class KmpLoggerKotlinThrowable, KmpLoggerLoggerLevel, KmpLoggerContentCompanion, KmpLoggerAbsLogger, SharedLogger, KmpLoggerKotlinEnumCompanion, KmpLoggerKotlinEnum<E>, KmpLoggerKotlinArray<T>, KmpLoggerFilterCompanion;
 
-@protocol KmpLoggerLogger, KmpLoggerKotlinComparable, KmpLoggerKotlinIterator;
+@protocol KmpLoggerLogger, KmpLoggerContent, KmpLoggerKotlinComparable, KmpLoggerFilter, KmpLoggerKotlinIterator;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -169,6 +169,29 @@ __attribute__((swift_name("AbsLogger")))
 - (void)wTag:(NSString *)tag msg:(NSString *)msg tr:(KmpLoggerKotlinThrowable * _Nullable)tr __attribute__((swift_name("w(tag:msg:tr:)")));
 @end
 
+__attribute__((swift_name("Content")))
+@protocol KmpLoggerContent
+@required
+@property (readonly) NSString *message __attribute__((swift_name("message")));
+@property (readonly) KmpLoggerKotlinThrowable * _Nullable throwable __attribute__((swift_name("throwable")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ContentCompanion")))
+@interface KmpLoggerContentCompanion : KmpLoggerBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+@property (class, readonly, getter=shared) KmpLoggerContentCompanion *shared __attribute__((swift_name("shared")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmStatic
+*/
+- (id<KmpLoggerContent>)ofMsg:(NSString *)msg tr:(KmpLoggerKotlinThrowable *)tr __attribute__((swift_name("of(msg:tr:)")));
+- (id<KmpLoggerContent>)with:(NSString *)receiver exception:(KmpLoggerKotlinThrowable *)exception __attribute__((swift_name("with(_:exception:)")));
+@end
+
 __attribute__((objc_subclassing_restricted))
 @interface SharedLogger : KmpLoggerAbsLogger
 + (instancetype)alloc __attribute__((unavailable));
@@ -228,15 +251,141 @@ __attribute__((swift_name("LoggerLevel")))
 @property (class, readonly) NSArray<KmpLoggerLoggerLevel *> *entries __attribute__((swift_name("entries")));
 @end
 
+__attribute__((swift_name("Filter")))
+@protocol KmpLoggerFilter
+@required
+@end
+
+__attribute__((swift_name("AnyFilter")))
+@protocol KmpLoggerAnyFilter <KmpLoggerFilter>
+@required
+- (BOOL)filter __attribute__((swift_name("filter()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FilterCompanion")))
+@interface KmpLoggerFilterCompanion : KmpLoggerBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+@property (class, readonly, getter=shared) KmpLoggerFilterCompanion *shared __attribute__((swift_name("shared")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmStatic
+*/
+- (id<KmpLoggerFilter>)atLeastLevel:(KmpLoggerLoggerLevel *)level __attribute__((swift_name("atLeast(level:)")));
+@property (readonly) id<KmpLoggerFilter> ALL __attribute__((swift_name("ALL")));
+@property (readonly) id<KmpLoggerFilter> NONE __attribute__((swift_name("NONE")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmStatic
+*/
+@property (getter=default, setter=setDefault:) id<KmpLoggerFilter> default_ __attribute__((swift_name("default_")));
+@end
+
+__attribute__((swift_name("LevelFilter")))
+@protocol KmpLoggerLevelFilter <KmpLoggerFilter>
+@required
+- (BOOL)filterLevel:(KmpLoggerLoggerLevel *)level __attribute__((swift_name("filter(level:)")));
+@end
+
+__attribute__((swift_name("TagFilter")))
+@protocol KmpLoggerTagFilter <KmpLoggerFilter>
+@required
+- (BOOL)filterTag:(NSString *)tag __attribute__((swift_name("filter(tag:)")));
+@end
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("CompositeLoggerKt")))
 @interface KmpLoggerCompositeLoggerKt : KmpLoggerBase
 
 /**
  * @note annotations
+ *   kotlin.jvm.JvmName(name="exclude")
+*/
++ (id<KmpLoggerLogger>)minus:(id<KmpLoggerLogger>)receiver other:(id<KmpLoggerLogger>)other __attribute__((swift_name("minus(_:other:)")));
+
+/**
+ * @note annotations
  *   kotlin.jvm.JvmName(name="combine")
 */
 + (id<KmpLoggerLogger>)plus:(id<KmpLoggerLogger>)receiver other:(id<KmpLoggerLogger>)other __attribute__((swift_name("plus(_:other:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("FilterKt")))
+@interface KmpLoggerFilterKt : KmpLoggerBase
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="both")
+*/
++ (id<KmpLoggerFilter>)and:(id<KmpLoggerFilter>)receiver other:(id<KmpLoggerFilter>)other __attribute__((swift_name("and(_:other:)")));
++ (id<KmpLoggerFilter>)minus:(id<KmpLoggerFilter>)receiver other:(id<KmpLoggerFilter>)other __attribute__((swift_name("minus(_:other:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="any")
+*/
++ (id<KmpLoggerFilter>)or:(id<KmpLoggerFilter>)receiver other:(id<KmpLoggerFilter>)other __attribute__((swift_name("or(_:other:)")));
++ (id<KmpLoggerFilter>)plus:(id<KmpLoggerFilter>)receiver other:(id<KmpLoggerFilter>)other __attribute__((swift_name("plus(_:other:)")));
++ (id<KmpLoggerLogger>)withFilter:(id<KmpLoggerLogger>)receiver filter:(id<KmpLoggerFilter>)filter __attribute__((swift_name("withFilter(_:filter:)")));
++ (id<KmpLoggerLogger>)withoutFilter:(id<KmpLoggerLogger>)receiver __attribute__((swift_name("withoutFilter(_:)")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("LazyLoggerKt")))
+@interface KmpLoggerLazyLoggerKt : KmpLoggerBase
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="debugLazyContent")
+*/
++ (void)d:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy:(id<KmpLoggerContent> (^)(void))lazy __attribute__((swift_name("d(_:tag:lazy:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="debugLazyMessage")
+*/
++ (void)d:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy_:(NSString *(^)(void))lazy __attribute__((swift_name("d(_:tag:lazy_:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="errorLazyContent")
+*/
++ (void)e:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy:(id<KmpLoggerContent> (^)(void))lazy __attribute__((swift_name("e(_:tag:lazy:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="errorLazyMessage")
+*/
++ (void)e:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy_:(NSString *(^)(void))lazy __attribute__((swift_name("e(_:tag:lazy_:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="infoLazyContent")
+*/
++ (void)i:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy:(id<KmpLoggerContent> (^)(void))lazy __attribute__((swift_name("i(_:tag:lazy:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="infoLazyMessage")
+*/
++ (void)i:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy_:(NSString *(^)(void))lazy __attribute__((swift_name("i(_:tag:lazy_:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="warnLazyContent")
+*/
++ (void)w:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy:(id<KmpLoggerContent> (^)(void))lazy __attribute__((swift_name("w(_:tag:lazy:)")));
+
+/**
+ * @note annotations
+ *   kotlin.jvm.JvmName(name="warnLazyMessage")
+*/
++ (void)w:(id<KmpLoggerLogger>)receiver tag:(NSString *)tag lazy_:(NSString *(^)(void))lazy __attribute__((swift_name("w(_:tag:lazy_:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
