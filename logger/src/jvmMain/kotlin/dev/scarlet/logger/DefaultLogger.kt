@@ -23,7 +23,7 @@ package dev.scarlet.logger
  * > [Logger] implementation.
  *
  * @author Scarlet Pan
- * @since 1.0.0
+ * @version 1.0.1
  */
 object DefaultLogger {
 
@@ -39,7 +39,7 @@ object DefaultLogger {
      */
     @JvmOverloads
     @JvmStatic
-    fun d(tag: String, msg: String, tr: Throwable? = null) = Logger.default.d(tag, msg, tr)
+    fun d(tag: String, msg: String, tr: Throwable? = null) = Logger.d(tag, msg, tr)
 
 
     /**
@@ -53,7 +53,7 @@ object DefaultLogger {
      */
     @JvmOverloads
     @JvmStatic
-    fun i(tag: String, msg: String, tr: Throwable? = null) = Logger.default.i(tag, msg, tr)
+    fun i(tag: String, msg: String, tr: Throwable? = null) = Logger.i(tag, msg, tr)
 
     /**
      * Logs a WARN-level message with only a throwable (no explicit message).
@@ -64,7 +64,7 @@ object DefaultLogger {
      * @param tr The throwable (must be non-null).
      */
     @JvmStatic
-    fun w(tag: String, tr: Throwable) = Logger.default.w(tag, tr)
+    fun w(tag: String, tr: Throwable) = Logger.w(tag, tr)
 
     /**
      * Logs a message at the WARN level.
@@ -77,7 +77,7 @@ object DefaultLogger {
      */
     @JvmOverloads
     @JvmStatic
-    fun w(tag: String, msg: String, tr: Throwable? = null) = Logger.default.w(tag, msg, tr)
+    fun w(tag: String, msg: String, tr: Throwable? = null) = Logger.w(tag, msg, tr)
 
     /**
      * Logs a message at the ERROR level.
@@ -91,6 +91,6 @@ object DefaultLogger {
      */
     @JvmOverloads
     @JvmStatic
-    fun e(tag: String, msg: String, tr: Throwable? = null) = Logger.default.e(tag, msg, tr)
+    fun e(tag: String, msg: String, tr: Throwable? = null) = Logger.e(tag, msg, tr)
 
 }

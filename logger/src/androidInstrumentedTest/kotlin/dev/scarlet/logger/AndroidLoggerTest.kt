@@ -2,12 +2,12 @@ package dev.scarlet.logger
 
 import android.util.Log
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import org.junit.Assert.assertTrue
 import org.junit.Before
+import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.BufferedReader
 import java.io.InputStreamReader
-import kotlin.test.Test
-import kotlin.test.assertTrue
 
 /**
  * @author Scarlet Pan

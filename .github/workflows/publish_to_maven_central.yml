@@ -6,7 +6,7 @@ on:
       module:
         description: 'Module to publish (e.g., "logger", "logger-slf4j", or "all")'
         required: true
-        default: 'logger-slf4j'
+        default: 'logger'
         type: choice
         options:
           - logger

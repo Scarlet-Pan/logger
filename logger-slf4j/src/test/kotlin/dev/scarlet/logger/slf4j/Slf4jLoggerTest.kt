@@ -7,7 +7,7 @@ import kotlin.test.assertEquals
 
 /**
  * @author Scarlet Pan
- * @since 1.0.0
+ * @version 1.0.0
  */
 class Slf4jLoggerTest {
 
