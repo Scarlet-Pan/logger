@@ -1,8 +1,0 @@
-framework module KmpLogger {
-    umbrella header "KmpLogger.h"
-
-    export *
-    module * { export * }
-
-    use Foundation
-}
